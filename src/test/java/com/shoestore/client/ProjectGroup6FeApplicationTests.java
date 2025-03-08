@@ -1,4 +1,4 @@
-package org.shoestore.client.project_group6_fe;
+package com.shoestore.client;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
