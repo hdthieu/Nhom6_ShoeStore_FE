@@ -13,15 +13,15 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Override
-    public CartDTO getCartById(int id) {
-
-        String apiUrl = "http://localhost:8080/cart/" + id;
-        ResponseEntity<CartDTO> response = restTemplate.exchange(
-                apiUrl, HttpMethod.GET, null, CartDTO.class
-        );
-        System.out.println("Response Body: " + response.getBody());
-        return response.getBody();
-
-    }
+//    @Override
+//    public CartDTO getCartById(int id) {
+//
+//        String apiUrl = "http://localhost:8080/cart/" + id;
+//        ResponseEntity<CartDTO> response = restTemplate.exchange(
+//                apiUrl, HttpMethod.GET, null, CartDTO.class
+//        );
+//        System.out.println("Response Body: " + response.getBody());
+//        return response.getBody();
+//
+//    }
 }

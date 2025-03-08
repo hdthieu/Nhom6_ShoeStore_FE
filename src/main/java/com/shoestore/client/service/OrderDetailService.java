@@ -9,5 +9,5 @@ public interface OrderDetailService {
 
     // lấy API từ server
     public Map<String, Object> fetchOrderDetailByOrderID(int orderID);
-    public List<ProductDTO> getAvailableProducts(int orderID);
+//    public List<ProductDTO> getAvailableProducts(int orderID);
 }

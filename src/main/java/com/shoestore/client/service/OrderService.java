@@ -15,7 +15,7 @@ public interface OrderService {
     public Page<OrderDTO> getOrdersWithPagination(Pageable pageable);
     public Map<String, Object> getRevenueStatistics(String startDate, String endDate);
     public List<ProductDTO> getTopSellingProducts(String type);
-    public Map<String, Object> getYearlyRevenue();
-    public List<Map<String, Object>> getTop10LoyalCustomers();
-    public Map<String, Long> getOrderStatistics();
+//    public Map<String, Object> getYearlyRevenue();
+//    public List<Map<String, Object>> getTop10LoyalCustomers();
+//    public Map<String, Long> getOrderStatistics();
 }

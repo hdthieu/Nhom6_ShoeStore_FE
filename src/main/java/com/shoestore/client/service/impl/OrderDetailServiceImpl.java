@@ -28,16 +28,16 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
 
-    public List<ProductDTO> getAvailableProducts(int orderID) {
-        String productApiUrl = "http://localhost:8080/OrderDetail/addProductToOrder/";
-        ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
-                productApiUrl + orderID,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<ProductDTO>>() {}
-        );
-
-        return response.getBody();
-    }
+//    public List<ProductDTO> getAvailableProducts(int orderID) {
+//        String productApiUrl = "http://localhost:8080/OrderDetail/addProductToOrder/";
+//        ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
+//                productApiUrl + orderID,
+//                HttpMethod.GET,
+//                null,
+//                new ParameterizedTypeReference<List<ProductDTO>>() {}
+//        );
+//
+//        return response.getBody();
+//    }
 
 }

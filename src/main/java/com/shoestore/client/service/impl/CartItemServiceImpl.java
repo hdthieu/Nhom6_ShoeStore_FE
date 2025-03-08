@@ -27,13 +27,13 @@ public class CartItemServiceImpl implements CartItemService {
     return cartItems != null ? Arrays.asList(cartItems) : List.of();
   }
 
-  @Override
-  public CartItemDTO addCartItem(CartItemDTO cartItemDTO) {
-    String apiUrl = "http://localhost:8080/cart/add";
-    ResponseEntity<CartItemDTO> response=restTemplate.postForEntity(
-            apiUrl,cartItemDTO, CartItemDTO.class
-    );
-    return response.getBody();
-  }
+//  @Override
+//  public CartItemDTO addCartItem(CartItemDTO cartItemDTO) {
+//    String apiUrl = "http://localhost:8080/cart/add";
+//    ResponseEntity<CartItemDTO> response=restTemplate.postForEntity(
+//            apiUrl,cartItemDTO, CartItemDTO.class
+//    );
+//    return response.getBody();
+//  }
 
 }

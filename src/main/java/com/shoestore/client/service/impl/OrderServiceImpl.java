@@ -68,31 +68,31 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    @Override
-    public Map<String, Object> getYearlyRevenue() {
-        String url = "http://localhost:8080/Order/yearly-revenue";
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-        return response;
-    }
-
-    @Override
-    public List<Map<String, Object>> getTop10LoyalCustomers() {
-        String url = "http://localhost:8080/Order/loyal-customers?minOrders=" ;
-        ResponseEntity<List> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                List.class
-        );
-        return response.getBody();
-    }
-
-    @Override
-    public Map<String, Long> getOrderStatistics() {
-        String SERVER_API_URL = "http://localhost:8080/Order/OrderStatistics";
-        ResponseEntity<Map> response = restTemplate.getForEntity(SERVER_API_URL, Map.class);
-        return response.getBody();
-    }
+//    @Override
+//    public Map<String, Object> getYearlyRevenue() {
+//        String url = "http://localhost:8080/Order/yearly-revenue";
+//        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+//        return response;
+//    }
+//
+//    @Override
+//    public List<Map<String, Object>> getTop10LoyalCustomers() {
+//        String url = "http://localhost:8080/Order/loyal-customers?minOrders=" ;
+//        ResponseEntity<List> response = restTemplate.exchange(
+//                url,
+//                HttpMethod.GET,
+//                null,
+//                List.class
+//        );
+//        return response.getBody();
+//    }
+//
+//    @Override
+//    public Map<String, Long> getOrderStatistics() {
+//        String SERVER_API_URL = "http://localhost:8080/Order/OrderStatistics";
+//        ResponseEntity<Map> response = restTemplate.getForEntity(SERVER_API_URL, Map.class);
+//        return response.getBody();
+//    }
 
 
 }
