@@ -20,14 +20,14 @@ import java.util.List;
 
 @Controller
 public class ReviewController {
-    @Autowired
-    private ReviewService reviewService;
-
-    @GetMapping("/product/review")
-    public String listReviewForAdmin(Model model){
-        List<ReviewDTO> reviews= reviewService.getAllReview();
-        model.addAttribute("reviews",reviews);
-        System.out.println(reviews);
-        return "page/Admin/QuanLyBaiDanhGia";
-    }
+//    @Autowired
+//    private ReviewService reviewService;
+//
+//    @GetMapping("/product/review")
+//    public String listReviewForAdmin(Model model){
+//        List<ReviewDTO> reviews= reviewService.getAllReview();
+//        model.addAttribute("reviews",reviews);
+//        System.out.println(reviews);
+//        return "page/Admin/QuanLyBaiDanhGia";
+//    }
 }

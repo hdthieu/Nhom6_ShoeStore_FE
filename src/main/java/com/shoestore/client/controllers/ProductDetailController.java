@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 @Controller
 public class ProductDetailController {
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private ProductDetailService productDetailService;
-    @GetMapping("/product-details/{id}")
-    public String showProductDetails(@PathVariable("id") int id, Model model) {
-        ProductDTO product =productService.getProductByIdForDetail(id);
-        List<ProductDetailDTO> productDetails=productDetailService.getProductDetailByProduct(id);
-        model.addAttribute("product", product);
-        model.addAttribute("productDetail", productDetails);
-        return "page/Customer/ProductDetail";
-    }
+//    @Autowired
+//    private ProductService productService;
+//    @Autowired
+//    private ProductDetailService productDetailService;
+//    @GetMapping("/product-details/{id}")
+//    public String showProductDetails(@PathVariable("id") int id, Model model) {
+//        ProductDTO product =productService.getProductByIdForDetail(id);
+//        List<ProductDetailDTO> productDetails=productDetailService.getProductDetailByProduct(id);
+//        model.addAttribute("product", product);
+//        model.addAttribute("productDetail", productDetails);
+//        return "page/Customer/ProductDetail";
+//    }
 }
