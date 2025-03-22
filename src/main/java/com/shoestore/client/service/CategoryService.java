@@ -17,5 +17,5 @@ import java.util.List;
 @Service
 public interface CategoryService {
     public List<CategoryDTO> getAllCategory();
-//    List<CategoryProductCountDTO> getCountProduct();
+    List<CategoryProductCountDTO> getCountProduct();
 }

@@ -1,5 +1,6 @@
 package com.shoestore.client.service.impl;
 
+import com.shoestore.client.dto.request.ProductDTO;
 import com.shoestore.client.dto.request.ProductDetailDTO;
 import com.shoestore.client.dto.response.ProductDetailResponseDTO;
 import com.shoestore.client.service.ProductDetailService;

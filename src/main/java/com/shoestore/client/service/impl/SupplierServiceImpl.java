@@ -10,6 +10,7 @@ package com.shoestore.client.service.impl;
 
 
 import com.shoestore.client.dto.request.SupplierDTO;
+import com.shoestore.client.dto.response.CategoryResponseDTO;
 import com.shoestore.client.dto.response.SupplierResponseDTO;
 import com.shoestore.client.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class SupplierServiceImpl implements SupplierService {
     private RestTemplate restTemplate;
     @Override
     public List<SupplierDTO> getAllSupplier() {
-        String apiUrl="http://localhost:8080/products/add";
+        String apiUrl="http://localhost:8765/products/add";
         ResponseEntity<SupplierResponseDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, SupplierResponseDTO.class
         );

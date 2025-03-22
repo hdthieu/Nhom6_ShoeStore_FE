@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -61,7 +62,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public List<ProductDTO> getFilteredProducts(List<Integer> categoryIds, List<Integer> brandIds, List<String> color, List<String> size, Double minPrice, Double maxPrice, String sortBy) {
+    public List<ProductDTO> getFilteredProducts(List<Integer> categoryIds, List<Integer> brandIds, List<String> color, List<String> size,String sortBy) {
         StringBuilder apiUrl = new StringBuilder("http://localhost:8080/products/filtered");
 
         // Thêm các tham số vào URL nếu không null
@@ -85,13 +86,6 @@ public class ProductServiceImpl implements ProductService {
             apiUrl.append(hasParam ? "&" : "?").append("size=")
                     .append(String.join(",", size));
             hasParam = true;
-        }
-        if (minPrice != null) {
-            apiUrl.append(hasParam ? "&" : "?").append("minPrice=").append(minPrice);
-            hasParam = true;
-        }
-        if (maxPrice != null) {
-            apiUrl.append(hasParam ? "&" : "?").append("maxPrice=").append(maxPrice);
         }
         if (sortBy != null) {
             try {
@@ -121,39 +115,61 @@ public class ProductServiceImpl implements ProductService {
         return new LinkedList<>();
     }
 
+    @Override
+    public ProductResponseDTO findProducts(String keyword, String sortBy, String order, int page, int size) {
+        // Xây dựng URL với tất cả tham số, kể cả keyword (cho phép null)
+        String apiUrl = UriComponentsBuilder
+                .fromHttpUrl("http://localhost:8080/products/findproducts")
+                .queryParam("keyword", keyword) // Keyword có thể null
+                .queryParam("page", page)       // Trang
+                .queryParam("size", size)       // Kích thước mỗi trang
+                .queryParam("sortBy", sortBy)   // Trường sắp xếp (có thể null)
+                .queryParam("order", order)     // Thứ tự sắp xếp (có thể null)
+                .toUriString();
 
+        // Gọi API với RestTemplate
+        ResponseEntity<ProductResponseDTO> response = restTemplate.exchange(
+                apiUrl, HttpMethod.GET, null, ProductResponseDTO.class
+        );
 
+        // Log response body (Có thể bỏ qua trong môi trường production)
+        System.out.println("Response Body: " + response.getBody());
 
+        // Trả về danh sách sản phẩm từ response
+        return response.getBody();
+    }
 
 
     // Lấy Top 10 sản phẩm bán chạy
     @Override
     public List<ProductHomeDTO> getTop10BestSellers() {
-        String apiUrl = "http://localhost:8080/products/best-sellers";
-        ResponseEntity<ProductHomeResponseDTO> response = restTemplate.exchange(
-                apiUrl, HttpMethod.GET, null, ProductHomeResponseDTO.class
-        );
-        System.out.println("Response Body: " + response.getBody());
-        return response.getBody().getProductDTOs();
+//        String apiUrl = "http://localhost:8765/products/best-sellers";
+//        ResponseEntity<ProductHomeResponseDTO> response = restTemplate.exchange(
+//                apiUrl, HttpMethod.GET, null, ProductHomeResponseDTO.class
+//        );
+//        return response.getBody().getBestSellers();
+        return null;
     }
 
     // Lấy Top 10 sản phẩm mới ra mắt
     @Override
     public List<ProductHomeDTO> getTop10NewArrivals() {
-        String apiUrl = "http://localhost:8080/products/new-arrivals";
-        ResponseEntity<ProductHomeResponseDTO> response = restTemplate.exchange(
-                apiUrl, HttpMethod.GET, null, ProductHomeResponseDTO.class
-        );
-        return response.getBody().getProductDTOs();
+//        String apiUrl = "http://localhost:8765/products/new-arrivals";
+//        ResponseEntity<ProductHomeResponseDTO> response = restTemplate.exchange(
+//                apiUrl, HttpMethod.GET, null, ProductHomeResponseDTO.class
+//        );
+//        return response.getBody().getNewArrivals();
+        return null;
     }
 
     // Lấy Top 10 sản phẩm thịnh hành
     @Override
     public List<ProductHomeDTO> getTop10Trending() {
-        String apiUrl = "http://localhost:8080/products/trending";
-        ResponseEntity<ProductHomeResponseDTO> response = restTemplate.exchange(
-                apiUrl, HttpMethod.GET, null, ProductHomeResponseDTO.class
-        );
-        return response.getBody().getProductDTOs();
+//        String apiUrl = "http://localhost:8765/products/trending";
+//        ResponseEntity<ProductHomeResponseDTO> response = restTemplate.exchange(
+//                apiUrl, HttpMethod.GET, null, ProductHomeResponseDTO.class
+//        );
+//        return response.getBody().getTrendingProducts();
+        return null;
     }
 }

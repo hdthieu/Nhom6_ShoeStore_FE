@@ -4,17 +4,24 @@ import com.shoestore.client.dto.request.VoucherDTO;
 import com.shoestore.client.dto.response.VoucherResponseDTO;
 import com.shoestore.client.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class VoucherServiceImpl implements VoucherService {
@@ -23,21 +30,12 @@ public class VoucherServiceImpl implements VoucherService {
     private static final String SERVER_URL = "http://localhost:8080/vouchers";
     @Override
     public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate) {
-        // Tạo URL với các tham số tìm kiếm
-        String url = SERVER_URL + "?startDate=" + (startDate != null ? startDate : "")
-                + "&endDate=" + (endDate != null ? endDate : "");
+        String url = String.format("%s?startDate=%s&endDate=%s", SERVER_URL+"/search",
+                startDate != null ? startDate : "",
+                endDate != null ? endDate : "");
 
-        // Thực hiện gọi API GET đến server
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, null, Map.class);
-
-        // Trả về danh sách voucher nếu có dữ liệu trả về
-        if (response.getStatusCode() == HttpStatus.OK) {
-            Map<String, Object> responseBody = response.getBody();
-            if (responseBody != null && responseBody.containsKey("vouchers")) {
-                return (List<VoucherDTO>) responseBody.get("vouchers");
-            }
-        }
-        return Collections.emptyList();  // Trả về danh sách rỗng nếu không có dữ liệu
+         VoucherDTO[] response = restTemplate.getForObject(url, VoucherDTO[].class);
+        return Arrays.asList(response);
     }
     @Override
     public VoucherDTO addVoucher(VoucherDTO voucher) {
