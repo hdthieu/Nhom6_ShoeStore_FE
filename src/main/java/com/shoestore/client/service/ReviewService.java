@@ -9,6 +9,7 @@ package com.shoestore.client.service;
 */
 
 import com.shoestore.client.dto.request.ReviewDTO;
+import com.shoestore.client.dto.response.ReviewResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,4 +18,8 @@ import java.util.List;
 public interface ReviewService {
 
     public List<ReviewDTO> getAllReview();
+
+    public ReviewResponseDTO getReviewByRating(int rating, int page, int size);
+
+    public ReviewResponseDTO findReviews(Integer rating, int page, int size, String nameProduct, String sortOrder);
 }

@@ -17,6 +17,7 @@ public class CartItemResponseDTO {
   private ColorDTO color;
   private SizeDTO size;
   private int stockQuantity;
+  private int productId;
   @Data
   public static class IdDTO {
     private int cartId;

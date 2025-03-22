@@ -20,4 +20,23 @@ public class UserResponseDTO {
   private int totalPages;
   @JsonProperty("user")
   private List<UserDTO> userDTOs;
+
+  public int getTotalItem() {
+    return totalItems;
+  }
+  public void setTotalItem(int totalItems) {
+    this.totalItems = totalItems;
+  }
+  public int getTotalPage() {
+    return totalPages;
+  }
+  public void setTotalPage(int totalPage) {
+    this.totalPages = totalPage;
+  }
+  public List<UserDTO> getUsers() {
+    return userDTOs;
+  }
+  public void setUsers(List<UserDTO> users) {
+    this.userDTOs = users;
+  }
 }

@@ -1,6 +1,7 @@
 package com.shoestore.client.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.shoestore.client.dto.request.BrandDTO;
 import com.shoestore.client.dto.request.CategoryDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
