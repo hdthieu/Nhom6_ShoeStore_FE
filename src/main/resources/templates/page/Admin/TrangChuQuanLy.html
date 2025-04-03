@@ -162,30 +162,30 @@
       <h2 class="mb-4">Quản Trị Website</h2>
       <div class="row">
         <!-- Loop qua từng trạng thái và hiển thị thành card -->
-<!--        <div class="col-md-3 mb-4" th:each="entry : ${statistics}">-->
-<!--          <div-->
-<!--                  class="card dashboard-card position-relative"-->
-<!--                  th:classappend="${entry.key} == 'Processing' ? 'bg-processing' :-->
-<!--                        (${entry.key} == 'Shipped' ? 'bg-shipped' :-->
-<!--                        (${entry.key} == 'Delivered' ? 'bg-delivered' :-->
-<!--                        'bg-return'))">-->
-<!--            <div class="card-body">-->
-<!--              <div class="d-flex justify-content-between align-items-center">-->
-<!--                <div>-->
-<!--                  <h4 th:text="${entry.value}">0</h4>-->
-<!--                  <p th:text="${entry.key}">Status</p>-->
-<!--                </div>-->
-<!--                <i th:class="'fas icon ' +-->
-<!--              (${entry.key} == 'Processing' ? 'fa-spinner' :-->
-<!--              (${entry.key} == 'Shipped' ? 'fa-truck' :-->
-<!--              (${entry.key} == 'Delivered' ? 'fa-check-circle' :-->
-<!--              'fa-undo-alt')))">-->
-<!--                </i>-->
-<!--              </div>-->
+        <div class="col-md-3 mb-4" th:each="entry : ${statistics}">
+          <div
+                  class="card dashboard-card position-relative"
+                  th:classappend="${entry.key} == 'Processing' ? 'bg-processing' :
+                        (${entry.key} == 'Shipped' ? 'bg-shipped' :
+                        (${entry.key} == 'Delivered' ? 'bg-delivered' :
+                        'bg-return'))">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h4 th:text="${entry.value}">0</h4>
+                  <p th:text="${entry.key}">Status</p>
+                </div>
+                <i th:class="'fas icon ' +
+              (${entry.key} == 'Processing' ? 'fa-spinner' :
+              (${entry.key} == 'Shipped' ? 'fa-truck' :
+              (${entry.key} == 'Delivered' ? 'fa-check-circle' :
+              'fa-undo-alt')))">
+                </i>
+              </div>
 
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
+            </div>
+          </div>
+        </div>
       </div>
       <div class="row">
         <!-- Đơn hàng -->

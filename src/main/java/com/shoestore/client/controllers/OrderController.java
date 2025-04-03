@@ -27,11 +27,13 @@ import java.util.Map;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+
     @GetMapping("/loyal-customers")
     @ResponseBody
     public List<Map<String, Object>> getTop10LoyalCustomers() {
         return orderService.getTop10LoyalCustomers();
     }
+
     @Autowired
     private HttpSession session;
     @GetMapping("/Home")
