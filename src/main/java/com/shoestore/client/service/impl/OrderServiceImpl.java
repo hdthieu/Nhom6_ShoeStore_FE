@@ -77,18 +77,17 @@ public class OrderServiceImpl implements OrderService {
 //        return null;
     }
 
+    // Lấy danh sách 10 khách haàng thân thiết
     @Override
     public List<Map<String, Object>> getTop10LoyalCustomers() {
-//        String url = "http://localhost:8765/Order/loyal-customers?minOrders=" ;
-//        ResponseEntity<List> response = restTemplate.exchange(
-//                url,
-//                HttpMethod.GET,
-//                null,
-//                List.class
-//        );
-//        return response.getBody();
-
-        return null;
+        String url = "http://localhost:8765/Order/loyal-customers?minOrders=" ;
+        ResponseEntity<List> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                List.class
+        );
+        return response.getBody();
     }
 
     @Override

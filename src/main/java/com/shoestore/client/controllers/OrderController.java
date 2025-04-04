@@ -27,25 +27,27 @@ import java.util.Map;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+
     @GetMapping("/loyal-customers")
     @ResponseBody
     public List<Map<String, Object>> getTop10LoyalCustomers() {
         return orderService.getTop10LoyalCustomers();
     }
+
     @Autowired
     private HttpSession session;
     @GetMapping("/Home")
     public String showHomePage(Model model) {
         String today = LocalDate.now().toString();
         Map<String, Object> revenueStats = orderService.getRevenueStatistics(today, today);
-//        List<Map<String, Object>> loyalCustomer = orderService.getTop10LoyalCustomers();
+        List<Map<String, Object>> loyalCustomer = orderService.getTop10LoyalCustomers();
         Map<String, Long> statistics = orderService.getOrderStatistics();
         List<ProductDTO> topSellingProducts = orderService.getTopSellingProducts("day");
         model.addAttribute("totalRevenue", revenueStats.get("totalRevenue"));
         model.addAttribute("totalOrders", revenueStats.get("totalOrders"));
         model.addAttribute("startDate", today);
         model.addAttribute("endDate", today);
-//        model.addAttribute("loyalCustomer", loyalCustomer);
+        model.addAttribute("loyalCustomer", loyalCustomer);
         model.addAttribute("products", topSellingProducts);
         model.addAttribute("statistics", statistics);
         System.out.println(revenueStats);
