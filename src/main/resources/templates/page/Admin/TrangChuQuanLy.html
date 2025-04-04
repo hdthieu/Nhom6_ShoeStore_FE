@@ -227,96 +227,96 @@
         </div>
       </div>
     </div>
-<!--    <div class="main-content col-md-10">-->
-<!--      <h2>Thống Kê Doanh Thu Dựa Trên Số Đơn Hàng</h2>-->
-<!--      <form id="revenueForm" class="mb-4">-->
-<!--        <div class="row">-->
-<!--          <div class="col-md-6 mb-3">-->
-<!--            <div class="row">-->
-<!--              <div class="col-md-6 mb-3">-->
-<!--                <div class="form-group">-->
-<!--                  <label for="startDate" class="form-label">Ngày bắt đầu:</label>-->
-<!--                  <input type="date" id="startDate" name="startDate" th:value="${startDate}" required class="form-control">-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="col-md-6 mb-3">-->
-<!--                <div class="form-group">-->
-<!--                  <label for="endDate" class="form-label">Ngày kết thúc:</label>-->
-<!--                  <input type="date" id="endDate" name="endDate" th:value="${endDate}" required class="form-control">-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="col-md-12 mb-3">-->
-<!--                <button type="submit" class="btn btn-primary w-100">Thống Kê</button>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="row mt-4">-->
-<!--              <div class="col-md-6">-->
-<!--                <p>Tổng doanh thu: <span id="totalRevenue" th:text="${totalRevenue}">...</span> VNĐ</p>-->
-<!--                <p>Tổng số đơn hàng: <span id="totalOrders" th:text="${totalOrders}">...</span></p>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="col-md-4 mb-3 styleFrameChart">-->
-<!--            <canvas id="revenueChart" class="chart_1"></canvas>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </form>-->
-<!--    </div>-->
-<!--    <div class="main-content col-md-10">-->
-<!--          <h2>Best selling products</h2>-->
+    <div class="main-content col-md-10">
+      <h2>Thống Kê Doanh Thu Dựa Trên Số Đơn Hàng</h2>
+      <form id="revenueForm" class="mb-4">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <div class="form-group">
+                  <label for="startDate" class="form-label">Ngày bắt đầu:</label>
+                  <input type="date" id="startDate" name="startDate" th:value="${startDate}" required class="form-control">
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="form-group">
+                  <label for="endDate" class="form-label">Ngày kết thúc:</label>
+                  <input type="date" id="endDate" name="endDate" th:value="${endDate}" required class="form-control">
+                </div>
+              </div>
+              <div class="col-md-12 mb-3">
+                <button type="submit" class="btn btn-primary w-100">Thống Kê</button>
+              </div>
+            </div>
+            <div class="row mt-4">
+              <div class="col-md-6">
+                <p>Tổng doanh thu: <span id="totalRevenue" th:text="${totalRevenue}">...</span> VNĐ</p>
+                <p>Tổng số đơn hàng: <span id="totalOrders" th:text="${totalOrders}">...</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3 styleFrameChart">
+            <canvas id="revenueChart" class="chart_1"></canvas>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="main-content col-md-10">
+          <h2>Best selling products</h2>
 
-<!--          <div class="mb-4">-->
-<!--            <label for="timeType" class="form-label">Chọn loại thời gian:</label>-->
-<!--            <select id="timeType" class="form-control w-auto">-->
-<!--              <option value="day">day</option>-->
-<!--              <option value="week">week</option>-->
-<!--              <option value="month">month</option>-->
-<!--              <option value="year">year</option>-->
-<!--            </select>-->
-<!--          </div>-->
-<!--          <table class="table table-striped table-bordered">-->
-<!--            <thead>-->
-<!--            <tr>-->
-<!--              <th>Product name</th>-->
-<!--              <th>Brand</th>-->
-<!--              <th>Category</th>-->
-<!--            </tr>-->
-<!--            </thead>-->
-<!--            <tbody id="productsTableBody">-->
-<!--            </tbody>-->
-<!--          </table>-->
-<!--          <div class="pagination-wrapper text-center">-->
-<!--            <button id="prevPage" class="btn btn-primary" disabled>Previous</button>-->
-<!--            <button id="nextPage" class="btn btn-primary">Next</button>-->
-<!--          </div>-->
+          <div class="mb-4">
+            <label for="timeType" class="form-label">Chọn loại thời gian:</label>
+            <select id="timeType" class="form-control w-auto">
+              <option value="day">day</option>
+              <option value="week">week</option>
+              <option value="month">month</option>
+              <option value="year">year</option>
+            </select>
+          </div>
+          <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+              <th>Product name</th>
+              <th>Brand</th>
+              <th>Category</th>
+            </tr>
+            </thead>
+            <tbody id="productsTableBody">
+            </tbody>
+          </table>
+          <div class="pagination-wrapper text-center">
+            <button id="prevPage" class="btn btn-primary" disabled>Previous</button>
+            <button id="nextPage" class="btn btn-primary">Next</button>
+          </div>
 
-<!--    </div>-->
+    </div>
 
-<!--    <div class="main-content col-md-10">-->
-<!--      <h2 class="text-center">Top Loyal Customers</h2>-->
-<!--      <div class="table-container" style="display: flex; justify-content: center; align-items: center; height: 100%;">-->
-<!--        <table border="1" class="table table-striped table-bordered" style="width: 100%; max-width: 800px;">-->
-<!--          <thead>-->
-<!--          <tr>-->
-<!--            <th>Name</th>-->
-<!--            <th>UserName</th>-->
-<!--            <th>Email</th>-->
-<!--            <th>Phone</th>-->
-<!--            <th>Order Count</th>-->
-<!--          </tr>-->
-<!--          </thead>-->
-<!--          <tbody>-->
-<!--          <tr th:each="customer : ${loyalCustomer}">-->
-<!--            <td th:text="${customer['name']}"></td>-->
-<!--            <td th:text="${customer['userName']}"></td>-->
-<!--            <td th:text="${customer['email']}"></td>-->
-<!--            <td th:text="${customer['phone']}"></td>-->
-<!--            <td th:text="${customer['orderCount']}"></td>-->
-<!--          </tr>-->
-<!--          </tbody>-->
-<!--        </table>-->
-<!--      </div>-->
-<!--    </div>-->
+    <div class="main-content col-md-10">
+      <h2 class="text-center">Top Loyal Customers</h2>
+      <div class="table-container" style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <table border="1" class="table table-striped table-bordered" style="width: 100%; max-width: 800px;">
+          <thead>
+          <tr>
+            <th>STT</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Order Count</th>
+            <th>Total Spent</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="customer, iterStat : ${loyalCustomer}">
+            <td th:text="${iterStat.index + 1}"></td>
+            <td th:text="${customer['name']}"></td>
+            <td th:text="${customer['email']}"></td>
+            <td th:text="${customer['totalOrder']}"></td>
+            <td th:text="${customer['totalSpent']}"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
   </div>
 </div>
