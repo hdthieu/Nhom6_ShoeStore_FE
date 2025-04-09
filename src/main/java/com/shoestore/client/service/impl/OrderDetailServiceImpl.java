@@ -21,7 +21,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Autowired
     private RestTemplate restTemplate;
-    private static final String SERVER_API_URL = "http://localhost:8080/OrderDetail/layTT/";
+    private static final String SERVER_API_URL = "http://localhost:8765/Order/OrderDetail/layTT/";
 
     // Hàm gọi API server để lấy thông tin chi tiết đơn hàng
     public Map<String, Object> fetchOrderDetailByOrderID(int orderID) {
@@ -32,7 +32,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
 
     public List<ProductDTO> getAvailableProducts(int orderID) {
-        String productApiUrl = "http://localhost:8080/OrderDetail/addProductToOrder/";
+        String productApiUrl = "http://localhost:8765/Order/OrderDetail/addProductToOrder/";
         ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
                 productApiUrl + orderID,
                 HttpMethod.GET,
@@ -45,7 +45,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public OrderDetailResponeDTO addOrderDetail(OrderDetailResponeDTO orderDetailResponeDTO) {
-        String apiUrl = "http://localhost:8080/OrderDetail/add";
+        String apiUrl = "http://localhost:8765/Order/OrderDetail/add";
         ResponseEntity<OrderDetailResponeDTO> response=restTemplate.postForEntity(
                 apiUrl,orderDetailResponeDTO, OrderDetailResponeDTO.class
         );
