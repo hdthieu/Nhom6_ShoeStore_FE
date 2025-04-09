@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private RestTemplate restTemplate;
-    private static final String SERVER_URL = "http://localhost:8080/vouchers";
+    private static final String SERVER_URL = "http://localhost:8765/products/vouchers";
     @Override
     public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate) {
         String url = String.format("%s?startDate=%s&endDate=%s", SERVER_URL+"/search",
@@ -45,7 +45,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     public List<VoucherDTO> getVouchersFromServer() {
-        String apiUrl = "http://localhost:8080/vouchers";    // URL API trả về đối tượng chứa mảng "vouchers"
+        String apiUrl = SERVER_URL;    // URL API trả về đối tượng chứa mảng "vouchers"
         // Sử dụng ResponseEntity để lấy đối tượng JSON chứa danh sách vouchers
         ResponseEntity<VoucherResponseDTO> response = restTemplate.exchange(
                 apiUrl, HttpMethod.GET, null,

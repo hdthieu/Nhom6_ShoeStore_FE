@@ -59,6 +59,7 @@ function renderVoucherList(vouchers) {
         });
     });
 }
+
 document.getElementById("voucher-form").addEventListener("submit", function (event) {
     // Ngăn hành vi mặc định của form (submit)
     event.preventDefault();
@@ -117,7 +118,7 @@ document.getElementById("voucher-form").addEventListener("submit", function (eve
     }
 
     // Nếu không có lỗi, tiếp tục xử lý
-    fetch("http://localhost:8080/vouchers/add", {
+    fetch("http://localhost:8765/products/voucher/add", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
