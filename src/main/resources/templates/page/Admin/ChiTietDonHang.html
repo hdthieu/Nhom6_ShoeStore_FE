@@ -132,9 +132,9 @@
                     <div class="col-6 text-right"><strong>Giảm giá:</strong></div>
                     <div class="col-6">
                       <span id="discount"
-                            th:text="${orderDetail['voucherType'] == 'Percentage'
-                                      ? orderDetail['voucher'] + ' %'
-                                      : orderDetail['voucher']}">
+                            th:text="${orderDetail.voucher != null && orderDetail.voucher.discountType == 'Percentage'
+                        ? orderDetail.voucher.discountValue + ' %'
+                        : orderDetail.voucher.discountValue}">
                       </span>
                     </div>
                   </div>
@@ -157,30 +157,26 @@
                 <h5 class="text-primary">Thông Tin Khách Hàng</h5>
                 <div class="border p-3 rounded">
                   <div class="row mb-2">
-                    <div class="col-6 text-right">
-                      <strong>Tên khách hàng:</strong>
-                    </div>
+                    <div class="col-6 text-right"><strong>Tên khách hàng:</strong></div>
                     <div class="col-6">
-                      <span id="customerName" th:text="${orderDetail['userName']}"></span>
+                      <span id="customerName" th:text="${orderDetail.user.name}"></span>
                     </div>
                   </div>
+
                   <div class="row mb-2">
-                    <div class="col-6 text-right">
-                      <strong>Số điện thoại:</strong>
-                    </div>
+                    <div class="col-6 text-right"><strong>Số điện thoại:</strong></div>
                     <div class="col-6">
-                      <span id="customerPhone" th:text="${orderDetail['phoneNumber']}"></span>
+                      <span id="customerPhone" th:text="${orderDetail.user.phoneNumber}"></span>
                     </div>
                   </div>
+
                   <div class="row mb-2">
-                    <div class="col-6 text-right">
-                      <strong>Email:</strong>
-                    </div>
+                    <div class="col-6 text-right"><strong>Email:</strong></div>
                     <div class="col-6">
-                      <span id="customerEmail" th:text="${orderDetail['email']}"></span
-                      >
+                      <span id="customerEmail" th:text="${orderDetail.user.email}"></span>
                     </div>
                   </div>
+
                   <div class="row mb-2">
                     <div class="col-6 text-right">
                       <strong>Địa chỉ giao hàng:</strong>
@@ -208,30 +204,36 @@
                       </tr>
                     </thead>
                     <tbody id="productList">
-                      <tr th:each="product, iterStat : ${orderDetail.orderDetails}">
-                        <td th:text="${iterStat.count}"></td>
-                        <td style="    width: 150px; height: 90px; text-align: center;">
-                          <img th:src="@{'http://localhost:8080/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL}}"
-                               alt="Product Image">
-                        </td>
+                    <tr th:each="product, iterStat : ${orderDetail.orderDetails}">
+                      <td th:text="${iterStat.count}"></td> <!-- Thứ tự sản phẩm -->
 
-                        <td>
-                          <p class="mb-0 font-weight-bold" th:text="${product.productName}"></p>
-                          <small>Đơn giá: <span id="price-${product.productID}" th:text="${product.price}"></span></small>
-                        </td>
-                        <td style="display: none" data-product-id="${product.productID}"></td>
-                        <td>
-                          <input type="number" disabled
-                                 class="form-control text-center quantity-input"
-                                 th:value="${product.quantity}"
-                                 style="max-width: 70px; margin: 0 auto"
-                                 th:data-product-id="${product.productID}"/>
-                        </td>
-                        <td>
-                          <span id="total-${product.productID}" th:text="${product.quantity * product.price}"></span>
-                        </td>
-                      </tr>
+                      <td style="width: 150px; height: 90px; text-align: center;">
+                        <img th:src="@{'http://localhost:8081/ImageProduct/' + ${product.productID} + '/' + ${product.imgUrl}}"
+                             alt="Product Image">
+                      </td>
+
+                      <td>
+                        <p class="mb-0 font-weight-bold" th:text="${product.productName}"></p>
+                        <small>Đơn giá: <span id="price-${product.productID}" th:text="${product.price}"></span></small>
+                      </td>
+
+                      <td style="display: none" data-product-id="${product.productID}"></td>
+
+                      <td>
+                        <input type="number" disabled
+                               class="form-control text-center quantity-input"
+                               th:value="${product.quantity}"
+                               style="max-width: 70px; margin: 0 auto"
+                               th:data-product-id="${product.productID}"/>
+                      </td>
+
+                      <td>
+
+                        <span id="total-${product.productID}" th:text="${product.quantity * product.price}"></span>
+                      </td>
+                    </tr>
                     </tbody>
+
                   </table>
                 </div>
               </div>
