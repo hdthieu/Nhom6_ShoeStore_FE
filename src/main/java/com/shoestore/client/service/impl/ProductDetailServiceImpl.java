@@ -17,7 +17,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private RestTemplate restTemplate;
     @Override
     public List<ProductDetailDTO> getProductDetailByProduct(int productId) {
-        String apiUrl = "http://localhost:8080/products-details/{id}";
+        String apiUrl = "http://localhost:8765/products-details/{id}";
         ResponseEntity<ProductDetailResponseDTO> response = restTemplate.exchange(
                 apiUrl, HttpMethod.GET, null, ProductDetailResponseDTO.class, productId
         );
@@ -27,7 +27,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     public ProductDetailDTO getProductDetailById(int id) {
-        String apiUrl="http://localhost:8080/products-details/productDetailId/"+id;
+        String apiUrl="http://localhost:8765/products-details/productDetailId/"+id;
         ResponseEntity<ProductDetailDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, ProductDetailDTO.class
         );

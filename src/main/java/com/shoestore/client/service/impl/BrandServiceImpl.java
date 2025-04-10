@@ -27,7 +27,7 @@ public class BrandServiceImpl implements BrandService {
     private RestTemplate restTemplate;
     @Override
     public List<BrandDTO> getAllBrand() {
-        String apiUrl="http://localhost:8080/products/add";
+        String apiUrl="http://localhost:8765/products/add";
         ResponseEntity<BrandResponseDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, BrandResponseDTO.class
         );
@@ -37,7 +37,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public List<BrandDTO> getAllBrands() {
-        String apiUrl="http://localhost:8080/brands";
+        String apiUrl="http://localhost:8765/brands";
         ResponseEntity<BrandResponseDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, BrandResponseDTO.class
         );
