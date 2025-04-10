@@ -281,8 +281,8 @@
 
             const reviewID = row.querySelector('input[type="hidden"]').value;
 
-            // Gửi yêu cầu DELETE đến API để xóa sản phẩm
-            fetch(`http://localhost:8080/reviews/delete/${reviewID}`, {
+
+            fetch(`http://localhost:8765/reviews/delete/${reviewID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

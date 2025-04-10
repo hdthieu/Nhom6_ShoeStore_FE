@@ -136,7 +136,7 @@
 
                 <div class="form-group">
                     <label for="editProductCategory">Danh mục</label>
-                    <select class="form-control form-control-sm" id="editProductCategory" name="category" required>
+                    <select class="form-control form-control-sm" id="editProductCategory" name="categoryID" required>
                         <option value="" disabled>Chọn danh mục</option>
                         <option th:each="category : ${categories}"
                                 th:value="${category.categoryID}"
@@ -148,7 +148,7 @@
 
                 <div class="form-group">
                     <label for="editProductSupplier">Nhà cung cấp</label>
-                    <select class="form-control form-control-sm" id="editProductSupplier" name="supplier" required>
+                    <select class="form-control form-control-sm" id="editProductSupplier" name="supplierID" required>
                         <option value="" disabled>Chọn nhà cung cấp</option>
                         <option th:each="supplier : ${suppliers}"
                                 th:value="${supplier.supplierID}"
@@ -160,7 +160,7 @@
 
                 <div class="form-group">
                     <label for="editProductBrand">Thương hiệu</label>
-                    <select class="form-control form-control-sm" id="editProductBrand" name="brand" required>
+                    <select class="form-control form-control-sm" id="editProductBrand" name="brandID" required>
                         <option value="" disabled>Chọn thương hiệu</option>
                         <option th:each="brand : ${brands}"
                                 th:value="${brand.brandID}"
@@ -181,9 +181,12 @@
                     <div id="editImageContainer">
                         <p>Hình ảnh hiện tại:</p>
                         <div id="">
-                            <div th:each="image : ${product.imageURL}">
-                                <img id="editImagePreview" th:src="@{http://localhost:8080/images/{image}(image=${image})}" alt="Hình ảnh sản phẩm" class="image-preview" style="max-width: 300px; max-height: 300px; margin-right: 10px;" />
-
+                            <div>
+                                <img id="editImagePreview"
+                                     th:src="@{http://localhost:8765/images/{image}(image=${product.imageURL[0]})}"
+                                     alt="Hình ảnh sản phẩm"
+                                     class="image-preview"
+                                     style="max-width: 300px; max-height: 300px; margin-right: 10px;" />
                             </div>
                         </div>
                     </div>
@@ -247,7 +250,7 @@
         const productID = formData.get('productID');
 
         // Gửi yêu cầu PUT với FormData
-        fetch('http://localhost:8080/products/update/' + productID, {
+        fetch('http://localhost:8765/products/update/' + productID, {
             method: 'PUT',
             body: formData  // Gửi FormData thay vì JSON
         })
