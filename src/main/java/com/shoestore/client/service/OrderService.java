@@ -32,4 +32,6 @@ public interface OrderService {
     OrderCheckoutDTO getById(int id);
 
     List<OrderDTO> getOrdersByUserId(int userId);
+
+    public Page<OrderDTO> findByStatus(String status, Pageable pageable);
 }

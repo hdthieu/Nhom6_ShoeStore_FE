@@ -6,6 +6,7 @@ import com.shoestore.client.dto.request.UserDTO;
 import com.shoestore.client.dto.response.BestSellerDTO;
 import com.shoestore.client.service.OrderService;
 import jakarta.servlet.http.HttpSession;
+import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -102,15 +103,56 @@ public class OrderController {
         return revenueStats;
     }
 
-    // hiển thị danh sách đơn hàng
-    @GetMapping("/view")
-    public String showOrderList(Model model,
-                                @RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "5") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<OrderDTO> ordersPage = orderService.getOrdersWithPagination(pageable);
-        model.addAttribute("ordersPage", ordersPage);
-        return "page/Admin/QuanLyDonHang";
+//    // hiển thị danh sách đơn hàng
+//    @GetMapping("/view")
+//    public String showOrderList(Model model,
+//                                @RequestParam(defaultValue = "0") int page,
+//                                @RequestParam(defaultValue = "5") int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<OrderDTO> ordersPage = orderService.getOrdersWithPagination(pageable);
+//        model.addAttribute("ordersPage", ordersPage);
+//        return "page/Admin/QuanLyDonHang";
+//    }
+//
+//    @GetMapping("/searchstatus")
+//    public String viewOrders(
+//            @RequestParam(required = false) String status,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "5") int size,
+//            Model model) {
+//
+//        Pageable pageable = PageRequest.of(page, size);
+//
+//        Page<Order> ordersPage;
+//        if (status != null && !status.isEmpty()) {
+//            ordersPage = orderService.findByStatus(status, pageable);
+//        } else {
+//            ordersPage = orderService.findAll(pageable); // hoặc mặc định show hết
+//        }
+//
+//        model.addAttribute("ordersPage", ordersPage);
+//        model.addAttribute("selectedStatus", status); // để giữ trạng thái đã chọn
+//        return "page/Admin/QuanLyDonHang"; // Thymeleaf template name
+//    }
+@GetMapping("/view")
+public String showOrderList(Model model,
+                            @RequestParam(required = false) String status,
+                            @RequestParam(defaultValue = "0") int page,
+                            @RequestParam(defaultValue = "5") int size) {
+
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<OrderDTO> ordersPage;
+    if (status != null && !status.isEmpty()) {
+        ordersPage = orderService.findByStatus(status, pageable);
+    } else {
+        ordersPage = orderService.getOrdersWithPagination(pageable);
     }
+
+    model.addAttribute("ordersPage", ordersPage);
+    model.addAttribute("selectedStatus", status);
+    return "page/Admin/QuanLyDonHang";
+}
+
 
 }

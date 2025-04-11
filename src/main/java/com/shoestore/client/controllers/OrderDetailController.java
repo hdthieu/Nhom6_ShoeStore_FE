@@ -22,21 +22,9 @@ public class OrderDetailController{
     @Autowired
     private OrderDetailService orderDetailService;
 
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private BrandService brandService;
-
-    @Autowired
-    private CategoryService categoryService;
-
     @GetMapping("/view/{orderID}")
     public String viewOrderDetail(@PathVariable int orderID, Model model) {
-        // Lấy chi tiết đơn hàng
         Map<String, Object> orderDetail = orderDetailService.fetchOrderDetailByOrderID(orderID);
-//        List<ProductDTO> availableProducts = orderDetailService.getAvailableProducts(orderID);
-//        model.addAttribute("products", availableProducts);
         model.addAttribute("orderDetail", orderDetail);
 
         return "page/Admin/ChiTietDonHang";     }

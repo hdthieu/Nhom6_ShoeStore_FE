@@ -2,6 +2,7 @@ package com.shoestore.client.service.impl;
 
 import com.shoestore.client.dto.request.*;
 import com.shoestore.client.dto.response.BestSellerDTO;
+import com.shoestore.client.dto.response.PageDTO;
 import com.shoestore.client.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -139,5 +140,33 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Error fetching orders: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public Page<OrderDTO> findByStatus(String status, Pageable pageable) {
+        String apiUrl = "http://localhost:8765/Order/searchStatus?status=" + status
+                + "&page=" + pageable.getPageNumber()
+                + "&size=" + pageable.getPageSize();
+
+        ResponseEntity<PageDTO<OrderDTO>> responseEntity = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<PageDTO<OrderDTO>>() {}
+        );
+
+        PageDTO<OrderDTO> pageData = responseEntity.getBody();
+        if (pageData == null || pageData.getContent() == null) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        return new PageImpl<>(
+                pageData.getContent(),
+                pageable,
+                pageData.getTotalElements()
+        );
+    }
+
+
+
 
 }
