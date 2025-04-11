@@ -1,6 +1,7 @@
 package com.shoestore.client.service.impl;
 
 import com.shoestore.client.dto.request.*;
+import com.shoestore.client.dto.response.BestSellerDTO;
 import com.shoestore.client.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -52,21 +53,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<ProductDTO> getTopSellingProducts(String type) {
-//        String SERVER_API_URL = "http://localhost:8765/OrderDetail/top-selling";
-//        String url = String.format("%s?type=%s&limit=5", SERVER_API_URL, type);
-//        try {
-//            ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
-//                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ProductDTO>>() {}
-//            );
-//            List<ProductDTO> products = response.getBody();
-//            System.out.println("Products received: " + products.size());
-//            return products;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return Collections.emptyList();
-//        }
-        return null;
+    public List<BestSellerDTO> getTopSellingProducts(String type) {
+        String SERVER_API_URL = "http://localhost:8765/Order/bestsellers";
+        String url = String.format("%s?type=%s&limit=5", SERVER_API_URL, type);
+        try {
+            ResponseEntity<List<BestSellerDTO>> response = restTemplate.exchange(
+                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<BestSellerDTO>>() {}
+            );
+            List<BestSellerDTO> products = response.getBody();
+           System.out.println("Products received: " + products.size());
+            return products;
+       } catch (Exception e) {
+           e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     @Override

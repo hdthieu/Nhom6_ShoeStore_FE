@@ -3,6 +3,7 @@ package com.shoestore.client.controllers;
 import com.shoestore.client.dto.request.OrderDTO;
 import com.shoestore.client.dto.request.ProductDTO;
 import com.shoestore.client.dto.request.UserDTO;
+import com.shoestore.client.dto.response.BestSellerDTO;
 import com.shoestore.client.service.OrderService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class OrderController {
         Map<String, Object> revenueStats = orderService.getRevenueStatistics(today, today);
         List<Map<String, Object>> loyalCustomer = orderService.getTop10LoyalCustomers();
         Map<String, Long> statistics = orderService.getOrderStatistics();
-        List<ProductDTO> topSellingProducts = orderService.getTopSellingProducts("day");
+        List<BestSellerDTO> topSellingProducts = orderService.getTopSellingProducts("day");
         model.addAttribute("totalRevenue", revenueStats.get("totalRevenue"));
         model.addAttribute("totalOrders", revenueStats.get("totalOrders"));
         model.addAttribute("startDate", today);
@@ -83,7 +84,7 @@ public class OrderController {
             @RequestParam String type,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "5") int size) {
-        List<ProductDTO> products = orderService.getTopSellingProducts(type);
+        List<BestSellerDTO> products = orderService.getTopSellingProducts(type);
         Map<String, Object> response = new HashMap<>();
         response.put("products", products);
         response.put("prevPage", page - 1);
