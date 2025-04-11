@@ -156,7 +156,7 @@
         <main id="productList" class="main-content col-md-10 ml-sm-auto px-4">
             <h2 class="pt-3 pb-2 mb-3 border-bottom">Danh sách sản phẩm</h2>
             <div style="display: flex; justify-content: space-between;">
-                <form id="addProductForm" action="/page/admin/product/add" method="GET">
+                <form id="addProductForm" action="/page/admin/products/add" method="GET">
                     <button class="btn btn-success mb-3" type="submit">+ Thêm mới</button>
                 </form>
                 <form method="GET" action="/page/admin/products">
@@ -206,7 +206,7 @@
                         <td>
                             <div th:each="image : ${product.imageURL}">
                                 <!-- Hiển thị ảnh từ URL trả về -->
-                                <img th:src="@{http://localhost:8080/images/{image}(image=${image})}"
+                                <img th:src="@{http://localhost:8765/images/{image}(image=${image})}"
                                      alt="Hình ảnh sản phẩm" class="image-preview"
                                      style="max-width: 50px; max-height: 50px; margin-right: 5px;" />
                             </div>
@@ -283,7 +283,7 @@
             console.log("productID cần xóa:", productID);
 
             // Gửi yêu cầu DELETE đến API để xóa sản phẩm
-            fetch(`http://localhost:8080/products/delete/${productID}`, {
+            fetch(`http://localhost:8765/products/delete/${productID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
