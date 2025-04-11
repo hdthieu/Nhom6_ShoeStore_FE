@@ -48,7 +48,7 @@
           <div
             class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
           >
-            <button class="btn btn-primary stylebtnDangXuat" ><a th:href="@{http://localhost:3000/orders/view}" style="color: white">Danh Sách Đơn Hàng</a></button>
+            <button class="btn btn-primary stylebtnDangXuat" ><a href="http://localhost:3000/admin/orders/view" style="color: white">Danh Sách Đơn Hàng</a></button>
             <div class="progress-tracker mt-3 my-5">
               <h5>Hóa đơn <span id="O_ID" th:text="${orderDetail['orderID']}"></span></h5>
               <div class="progress-steps d-flex justify-content-between align-items-center pt-4 ">
@@ -208,7 +208,7 @@
                       <td th:text="${iterStat.count}"></td> <!-- Thứ tự sản phẩm -->
 
                       <td style="width: 150px; height: 90px; text-align: center;">
-                        <img th:src="@{'http://localhost:8081/ImageProduct/' + ${product.productID} + '/' + ${product.imgUrl}}"
+                        <img th:src="@{'http://localhost:8765/images/' + ${product.imgUrl}}"
                              alt="Product Image">
                       </td>
 
@@ -340,7 +340,7 @@
         console.log(orderId)
         console.log(selectedOption)
         // Gửi request đến server
-        fetch('http://localhost:8080/Order/update-status', {
+        fetch('http://localhost:8765/Order/update-status', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({

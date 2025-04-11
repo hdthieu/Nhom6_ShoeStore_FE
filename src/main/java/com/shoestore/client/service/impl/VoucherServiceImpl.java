@@ -27,16 +27,18 @@ import java.util.stream.Collectors;
 public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private RestTemplate restTemplate;
-    private static final String SERVER_URL = "http://localhost:8765/products/vouchers";
+    private static final String SERVER_URL = "http://localhost:8765/products/voucher";
     @Override
     public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate) {
-        String url = String.format("%s?startDate=%s&endDate=%s", SERVER_URL+"/search",
+        String url = String.format("%s/search?startDate=%s&endDate=%s", SERVER_URL,
                 startDate != null ? startDate : "",
                 endDate != null ? endDate : "");
 
-         VoucherDTO[] response = restTemplate.getForObject(url, VoucherDTO[].class);
+        // Gọi API và deserialize về array
+        VoucherDTO[] response = restTemplate.getForObject(url, VoucherDTO[].class);
         return Arrays.asList(response);
     }
+
     @Override
     public VoucherDTO addVoucher(VoucherDTO voucher) {
         // Gửi request đến API server
@@ -66,7 +68,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public VoucherDTO getVoucherById(int id) {
-        return restTemplate.getForObject(SERVER_URL +"/"+ id, VoucherDTO.class);
+        return restTemplate.getForObject( SERVER_URL + "/"+ id, VoucherDTO.class);
     }
 
     @Override
