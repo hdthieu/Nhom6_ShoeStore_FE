@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-
+import org.springframework.core.ParameterizedTypeReference;
 @Service
 public class AddressServiceImpl implements AddressService {
     @Autowired
@@ -20,16 +20,19 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<AddressDTO> getAddressByUserId(int id) {
-        String apiUrl="http://localhost:8080/address/user/"+id;
-        ResponseEntity<AddressResponseDTO> response= restTemplate.exchange(
-                apiUrl, HttpMethod.GET,null, AddressResponseDTO.class
+        String apiUrl = "http://localhost:8765/address/user/" + id;
+        ResponseEntity<List<AddressDTO>> response = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<AddressDTO>>() {}
         );
         System.out.println("Response Body: " + response.getBody());
-        return response.getBody().getAddress();
+        return response.getBody();
     }
     @Override
     public AddressDTO getAddressById(int id) {
-        String apiUrl="http://localhost:8080/address/"+id;
+        String apiUrl="http://localhost:8765/address/"+id;
         ResponseEntity<AddressDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, AddressDTO.class
         );

@@ -17,7 +17,7 @@
     <div class="product-details">
         <!-- Product Image and Thumbnails -->
         <div class="product-image">
-            <img th:src="@{'http://localhost:8080/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}}"
+            <img th:src="@{'http://localhost:8675/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}}"
                  alt="Product Image">
         </div>
         <form id="productDetailForm" method="POST" action="/customer/cart/add">
