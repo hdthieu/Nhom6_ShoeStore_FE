@@ -24,7 +24,7 @@ public class ProductServiceImpl implements ProductService {
     private RestTemplate restTemplate;
     @Override
     public List<ProductDTO> getAllProduct() {
-        String apiUrl="http://localhost:8080/products";
+        String apiUrl="http://localhost:8765/products";
         ResponseEntity<ProductResponseDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, ProductResponseDTO.class
         );
@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO addProduct(ProductDTO productDTO) {
-        String apiUrl = "http://localhost:8080/products/add";
+        String apiUrl = "http://localhost:8765/products/add";
         ResponseEntity<ProductDTO> response = restTemplate.postForEntity(
                 apiUrl, productDTO, ProductDTO.class
         );
@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO getProductByIdForDetail(int id) {
-        String apiUrl="http://localhost:8080/products/detailFor/"+id;
+        String apiUrl="http://localhost:8765/products/detailFor/"+id;
         ResponseEntity<ProductDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, ProductDTO.class
         );
@@ -53,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     public ProductDTO getProductByProductDetail(int id) {
-        String apiUrl="http://localhost:8080/products/detailsId/"+id;
+        String apiUrl="http://localhost:8765/products/detailsId/"+id;
         ResponseEntity<ProductDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, ProductDTO.class
         );
