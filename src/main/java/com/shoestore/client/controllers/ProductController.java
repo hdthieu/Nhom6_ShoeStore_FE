@@ -39,7 +39,7 @@ public class ProductController {
         return "page/Admin/QuanLySanPham";
     }
 
-    @GetMapping("/page/admin/product/add")
+    @GetMapping("/page/admin/products/add")
     public String listCategoryAdmin(Model model){
         List<CategoryDTO> categories= categoryService.getAllCategory();
         model.addAttribute("categories",categories);

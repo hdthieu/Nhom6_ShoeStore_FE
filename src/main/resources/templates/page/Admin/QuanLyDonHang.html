@@ -55,6 +55,17 @@
             <div class="container mt-2">
               <!-- Header and Action Buttons -->
               <h3>Danh sách đơn hàng</h3>
+              <div class="mt-4 mb-4">
+                <label for="timeType" class="form-label">Chọn loại Lọc (Return | Processing | Shipped | Delivered):</label>
+                <select id="timeType" class="form-control w-auto" onchange="filterOrdersByStatus()">
+                  <option value="">-- All --</option>
+                  <option value="return" th:selected="${selectedStatus == 'return'}">Return</option>
+                  <option value="delivered" th:selected="${selectedStatus == 'delivered'}">Delivered</option>
+                  <option value="shipped" th:selected="${selectedStatus == 'shipped'}">Shipped</option>
+                  <option value="processing" th:selected="${selectedStatus == 'processing'}">Processing</option>
+                </select>
+
+              </div>
               <div style="">
                 <table id="ordersTable" class="table table-striped">
                   <thead>
@@ -68,24 +79,28 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <!-- Duyệt qua danh sách đơn hàng và hiển thị thông tin -->
-                  <tr th:each="order : ${ordersPage.content}">
+                  <tr th:if="${ordersPage.empty}">
+                    <td colspan="6" class="text-center text-danger">Không có đơn hàng nào</td>
+                  </tr>
+                  <tr th:each="order : ${ordersPage.content}" th:unless="${ordersPage.empty}">
                     <td th:text="${order.orderID}"></td>
                     <td th:text="${order.dateCreated}"></td>
                     <td th:text="${order.name}"></td>
-                    <td  class="price" th:text="${order.totalPrice}"></td>
+                    <td class="price" th:text="${order.totalPrice}"></td>
                     <td th:text="${order.status}"></td>
                     <td>
                       <a class="btn btn-primary btn-sm" th:href="@{/admin/orderDetail/view/{orderID}(orderID=${order.orderID})}">Xem</a>
                     </td>
                   </tr>
                   </tbody>
+
                 </table>
                 <div class="pagination justify-content-center">
                   <ul class="pagination">
                     <!-- Nút "Prev" -->
                     <li class="page-item" th:classappend="${!ordersPage.hasPrevious()} ? 'disabled'">
-                      <a class="page-link" th:href="@{/admin/orders/view(page=${ordersPage.number - 1}, size=${ordersPage.size})}"
+                      <a class="page-link"
+                         th:href="@{/admin/orders/view(page=${ordersPage.number - 1}, size=${ordersPage.size}, status=${selectedStatus})}"
                          th:if="${ordersPage.hasPrevious()}">&laquo; Prev</a>
                       <a class="page-link" href="#" th:if="${!ordersPage.hasPrevious()}">&laquo; Prev</a>
                     </li>
@@ -103,7 +118,8 @@
 
                     <!-- Nút "Next" -->
                     <li class="page-item" th:classappend="${!ordersPage.hasNext()} ? 'disabled'">
-                      <a class="page-link" th:href="@{/admin/orders/view(page=${ordersPage.number + 1}, size=${ordersPage.size})}"
+                      <a class="page-link"
+                         th:href="@{/admin/orders/view(page=${ordersPage.number + 1}, size=${ordersPage.size}, status=${selectedStatus})}"
                          th:if="${ordersPage.hasNext()}">Next &raquo;</a>
                       <a class="page-link" href="#" th:if="${!ordersPage.hasNext()}">Next &raquo;</a>
                     </li>
@@ -150,6 +166,11 @@
         sessionStorage.removeItem("username"); // Xóa username khỏi Session Storage
         console.log("Username removed from Session Storage");
         window.location.href = "/login"; // Chuyển hướng về trang đăng nhập
+      }
+
+      function filterOrdersByStatus() {
+        const status = document.getElementById("timeType").value;
+        window.location.href = `/admin/orders/view?status=${status}`;
       }
     </script>
   </body>

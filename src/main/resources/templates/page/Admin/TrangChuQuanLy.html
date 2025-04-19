@@ -220,7 +220,7 @@
               </div>
               <div class="section-title">DOANH THU NĂM</div>
               <h5>
-                <span id="revenueDTYear" th:text="${revenueYear['totalRevenueYear']}"> </span> đ
+                <span id="revenueDTYear" th:text="${#numbers.formatDecimal(revenueYear['totalRevenueYear'], 0, 'POINT', 0, 'COMMA')} + ' đ'"> </span>
               </h5>
             </div>
           </div>
@@ -251,8 +251,8 @@
             </div>
             <div class="row mt-4">
               <div class="col-md-6">
-                <p>Tổng doanh thu: <span id="totalRevenue" th:text="${totalRevenue}">...</span> VNĐ</p>
-                <p>Tổng số đơn hàng: <span id="totalOrders" th:text="${totalOrders}">...</span></p>
+                <p>Tổng doanh thu: <span id="totalRevenue" th:text="${#numbers.formatDecimal(revenueYear['totalRevenue'], 0, 'POINT', 0, 'COMMA')} + ' đ'" >...</span> VNĐ</p>
+                <p>Tổng số đơn hàng: <span id="totalOrders"  th:text="${totalOrders}">...</span></p>
               </div>
             </div>
           </div>
@@ -264,7 +264,6 @@
     </div>
     <div class="main-content col-md-10">
           <h2>Best selling products</h2>
-
           <div class="mb-4">
             <label for="timeType" class="form-label">Chọn loại thời gian:</label>
             <select id="timeType" class="form-control w-auto">
@@ -280,6 +279,7 @@
               <th>Product name</th>
               <th>Brand</th>
               <th>Category</th>
+              <th>totalSold</th>
             </tr>
             </thead>
             <tbody id="productsTableBody">
@@ -311,7 +311,8 @@
             <td th:text="${customer['name']}"></td>
             <td th:text="${customer['email']}"></td>
             <td th:text="${customer['totalOrder']}"></td>
-            <td th:text="${customer['totalSpent']}"></td>
+            <td th:text="${#numbers.formatDecimal(customer['totalSpent'], 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
+
           </tr>
           </tbody>
         </table>
@@ -401,8 +402,9 @@
           const row = document.createElement('tr');
           row.innerHTML = `
                     <td>${product.productName}</td>
-                    <td>${product.brand.name}</td>
-                    <td>${product.category.name}</td>
+                    <td>${product.brandName}</td>
+                    <td>${product.categoryName}</td>
+                    <td>${product.totalSold}</td>
                 `;
           tableBody.appendChild(row);
         });

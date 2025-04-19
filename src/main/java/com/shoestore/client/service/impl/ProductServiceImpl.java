@@ -53,17 +53,18 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     public ProductDTO getProductByProductDetail(int id) {
-        String apiUrl="http://localhost:8765/products/detailsId/"+id;
-        ResponseEntity<ProductDTO> response= restTemplate.exchange(
-                apiUrl, HttpMethod.GET,null, ProductDTO.class
+        String apiUrl = "http://localhost:8765/products-details/productDetailId/" + id;
+        ResponseEntity<ProductDTO> response = restTemplate.exchange(
+                apiUrl, HttpMethod.GET, null, ProductDTO.class
         );
         return response.getBody();
     }
 
 
+
     @Override
     public List<ProductDTO> getFilteredProducts(List<Integer> categoryIds, List<Integer> brandIds, List<String> color, List<String> size,String sortBy) {
-        StringBuilder apiUrl = new StringBuilder("http://localhost:8080/products/filtered");
+        StringBuilder apiUrl = new StringBuilder("http://localhost:8765/products/filtered");
 
         // Thêm các tham số vào URL nếu không null
         boolean hasParam = false;
@@ -119,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDTO findProducts(String keyword, String sortBy, String order, int page, int size) {
         // Xây dựng URL với tất cả tham số, kể cả keyword (cho phép null)
         String apiUrl = UriComponentsBuilder
-                .fromHttpUrl("http://localhost:8080/products/findproducts")
+                .fromHttpUrl("http://localhost:8765/products/findproducts")
                 .queryParam("keyword", keyword) // Keyword có thể null
                 .queryParam("page", page)       // Trang
                 .queryParam("size", size)       // Kích thước mỗi trang

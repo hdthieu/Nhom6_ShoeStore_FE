@@ -71,7 +71,8 @@ document.getElementById("voucher-form").addEventListener("submit", function (eve
     const minValueOrder = parseFloat(document.getElementById("giaTriDonToiThieu").value);
     const startDate = document.getElementById("ngayBatDau").value;
     const endDate = document.getElementById("ngayKetThuc").value;
-
+    const startDateFormatted = startDate.split("T")[0];
+    const endDateFormatted = endDate.split("T")[0];
     const errors = [];
 
     // Kiểm tra các điều kiện
@@ -87,6 +88,12 @@ document.getElementById("voucher-form").addEventListener("submit", function (eve
     if (!discountValue || isNaN(discountValue) || discountValue <= 0) {
         errors.push("Vui lòng nhập giá trị giảm giá hợp lệ.");
     }
+
+    if (discountType === "Percentage" && discountValue > 100) {
+        errors.push("Giảm giá phần trăm không được vượt quá 100%");
+    }
+
+
     if (!minValueOrder || isNaN(minValueOrder) || minValueOrder < 0) {
         errors.push("Vui lòng nhập giá trị đơn tối thiểu hợp lệ.");
     }
@@ -111,13 +118,11 @@ document.getElementById("voucher-form").addEventListener("submit", function (eve
         }
     }
 
-    // Nếu có lỗi, hiển thị và dừng xử lý
     if (errors.length > 0) {
         alert(errors.join("\n"));
-        return; // Ngừng xử lý tiếp theo
+        return;
     }
 
-    // Nếu không có lỗi, tiếp tục xử lý
     fetch("http://localhost:8765/products/voucher/add", {
         method: "POST",
         headers: {
@@ -129,8 +134,8 @@ document.getElementById("voucher-form").addEventListener("submit", function (eve
             discountType,
             discountValue,
             minValueOrder,
-            startDate,
-            endDate,
+            startDate: startDateFormatted,
+            endDate: endDateFormatted,
         }),
     })
         .then(response => {
@@ -171,6 +176,12 @@ document.getElementById("voucher-form-edit").addEventListener("submit", function
     if (!discountValue || isNaN(discountValue) || discountValue <= 0) {
         errors.push("Vui lòng nhập giá trị giảm giá hợp lệ.");
     }
+
+    if (discountType === "Percentage" && discountValue > 100) {
+        errors.push("Giảm giá phần trăm không được vượt quá 100%");
+    }
+
+
     if (!minValueOrder || isNaN(minValueOrder) || minValueOrder < 0) {
         errors.push("Vui lòng nhập giá trị đơn tối thiểu hợp lệ.");
     }
@@ -248,12 +259,12 @@ function handleSearch() {
     fetch(`/admin/vouchers/search?startDate=${startDate}&endDate=${endDate}`)
         .then(response => response.json())
         .then(data => {
-            // Xử lý dữ liệu trả về từ API
-            renderVoucherList(data);
+            renderVoucherList(data); // `data` sẽ là một mảng `Voucher`
         })
         .catch(error => {
             console.error("Lỗi khi tìm kiếm:", error);
         });
+
 }
 
 document.querySelectorAll('.currency').forEach((element) => {

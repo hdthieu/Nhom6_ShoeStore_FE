@@ -1,6 +1,7 @@
 package com.shoestore.client.service.impl;
 
 import com.shoestore.client.dto.request.OrderCheckoutDTO;
+import com.shoestore.client.dto.request.OrderDetailRequestDTO;
 import com.shoestore.client.dto.request.ProductDTO;
 import com.shoestore.client.dto.response.OrderDetailResponeDTO;
 import com.shoestore.client.service.OrderDetailService;
@@ -32,7 +33,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
 
     public List<ProductDTO> getAvailableProducts(int orderID) {
-        String productApiUrl = "http://localhost:8765/Order/OrderDetail/addProductToOrder/";
+        String productApiUrl = "http://localhost:8765/Order/OrderDetail/add";
         ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
                 productApiUrl + orderID,
                 HttpMethod.GET,
@@ -44,12 +45,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public OrderDetailResponeDTO addOrderDetail(OrderDetailResponeDTO orderDetailResponeDTO) {
+    public String addOrderDetail(OrderDetailRequestDTO dto) {
         String apiUrl = "http://localhost:8765/Order/OrderDetail/add";
-        ResponseEntity<OrderDetailResponeDTO> response=restTemplate.postForEntity(
-                apiUrl,orderDetailResponeDTO, OrderDetailResponeDTO.class
-        );
-        System.out.println("GỬi " +orderDetailResponeDTO);
+        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, dto, String.class);
         return response.getBody();
     }
 

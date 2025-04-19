@@ -25,7 +25,7 @@ public class HomeController {
     List<ProductHomeDTO> top10BestSellers = productService.getTop10BestSellers();
     List<ProductHomeDTO> top10NewArrivals = productService.getTop10NewArrivals();
     List<ProductHomeDTO> top10Trending = productService.getTop10Trending();
-//    List<BrandDTO> brands = brandService.getAllBrand();
+    List<BrandDTO> brands = brandService.getAllBrand();
 //    System.out.println(top10BestSellers);
 //    System.out.println(top10NewArrivals);
 //    System.out.println(top10Trending);
@@ -34,7 +34,7 @@ public class HomeController {
     model.addAttribute("top10BestSellers", top10BestSellers);
     model.addAttribute("top10NewArrivals", top10NewArrivals);
     model.addAttribute("top10Trending", top10Trending);
-//    model.addAttribute("brands", brands);
+    model.addAttribute("brands", brands);
     return "page/Customer/Home"; // Return the home page view
   }
 }
