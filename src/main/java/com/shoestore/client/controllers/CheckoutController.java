@@ -3,10 +3,13 @@ package com.shoestore.client.controllers;
 import com.shoestore.client.client.OrderClient;
 import com.shoestore.client.client.PaymentClient;
 import com.shoestore.client.dto.request.*;
+import com.shoestore.client.dto.response.PaymentResponseDTO;
 import com.shoestore.client.dto.response.ProductDetailCheckoutDTO;
 import com.shoestore.client.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -44,8 +47,12 @@ public class CheckoutController {
         List<ProductDetailCheckoutDTO> productDetailCheckoutDTOS = selectedProducts.entrySet().stream()
                 .map(entry -> {
                     ProductDetailDTO pd = productDetailService.getProductDetailById(entry.getKey());
+
                     ProductDTO p = productService.getProductByProductDetail(entry.getKey());
+                    System.out.println(">> Giá đúng từ ProductDetailDTO: " + pd.getPrice());
+                    System.out.println(">> Giá sai từ ProductDTO (có thể là 0): " + p.getPrice());
                     return new ProductDetailCheckoutDTO(pd, entry.getValue(), p.getProductName(), p.getImageURL(), p.getPrice(), p.getProductID());
+
                 }).toList();
 
         DecimalFormat formatter = new DecimalFormat("#,###.##");
@@ -97,14 +104,14 @@ public class CheckoutController {
     }
 
     @PostMapping("/payment/add")
-    public String addOrder(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<?> addOrder(@RequestBody Map<String, Object> payload, HttpServletRequest request) {
         UserDTO user = (UserDTO) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        if (user == null) return ResponseEntity.status(401).body("Chưa đăng nhập");
 
-        Integer addressId = (Integer) payload.get("address");
-        Integer total = (Integer) payload.get("total");
-        Integer delivery = (Integer) payload.get("delivery");
-        Integer paymentCase = (Integer) payload.get("paymentCase");
+        Integer addressId = Integer.parseInt(payload.get("address").toString());
+        Integer total = Integer.parseInt(payload.get("total").toString());
+        Integer delivery = Integer.parseInt(payload.get("delivery").toString());
+        Integer paymentCase = Integer.parseInt(payload.get("paymentCase").toString());
         List<Map<String, Object>> productDetails = (List<Map<String, Object>>) payload.get("productDetails");
 
         AddressDTO address = addressService.getAddressById(addressId);
@@ -122,16 +129,49 @@ public class CheckoutController {
 
         for (Map<String, Object> productDetail : productDetails) {
             OrderDetailRequestDTO detail = new OrderDetailRequestDTO();
-            detail.setPrice(((Number) productDetail.get("price")).doubleValue());
-            detail.setQuantity((Integer) productDetail.get("quantity"));
-            Integer productDetailId = extractProductDetailID((String) productDetail.get("productDetailId"));
-            detail.setProductDetailId(productDetailId);
+            detail.setPrice(Double.parseDouble(productDetail.get("price").toString()));
+            detail.setQuantity(Integer.parseInt(productDetail.get("quantity").toString()));
+            detail.setProductDetailId(Integer.parseInt(productDetail.get("productDetailId").toString()));
             detail.setOrderId(savedOrder.getId());
 
             orderDetailService.addOrderDetail(detail);
         }
 
-        return "redirect:/order/confirm";
+        // 1. Tạo Payment như cũ
+        PaymentRequestDTO payment = new PaymentRequestDTO();
+        payment.setOrderID(savedOrder.getId());
+        payment.setPaymentDate(LocalDate.now());
+        payment.setStatus(paymentCase == 1 ? "Pending" : "Completed");
+        PaymentDTO savedPayment = paymentClient.createPayment(payment);
+
+// 2. Gán paymentID cho Order
+        orderClient.updatePaymentID(savedOrder.getId(), savedPayment.getPaymentID());
+
+
+        if (paymentCase == 1) {
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+            String orderInfo = "Thanh toán đơn hàng #" + savedOrder.getId();
+            try {
+                String paymentUrl = paymentClient.createVNPayUrl(total, orderInfo, baseUrl);
+                Map<String, Object> response = new HashMap<>();
+                response.put("redirect", true);
+                response.put("paymentUrl", paymentUrl);
+                return ResponseEntity.ok(response);
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(Map.of("error", "Lỗi tạo URL VNPay"));
+            }
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "redirect", false,
+                "orderId", savedOrder.getId(),
+                "paymentID", savedPayment.getPaymentID()
+        ));
+
+
+
+
     }
+
 
 }

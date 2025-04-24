@@ -133,10 +133,12 @@
                     <div class="col-6 text-right"><strong>Giảm giá:</strong></div>
                     <div class="col-6">
                       <span id="discount"
-                            th:text="${orderDetail.voucher != null && orderDetail.voucher.discountType == 'Percentage'
-                        ? orderDetail.voucher.discountValue + ' %'
-                        : orderDetail.voucher.discountValue}">
-                      </span>
+                            th:text="${orderDetail.voucher == null
+                  ? 'Không áp dụng'
+                  : (orderDetail.voucher.discountType == 'Percentage'
+                      ? orderDetail.voucher.discountValue + ' %'
+                      : orderDetail.voucher.discountValue)}">
+</span>
                     </div>
                   </div>
 
