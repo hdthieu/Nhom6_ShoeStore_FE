@@ -417,13 +417,17 @@
         }
 
         function cleanPrice(priceString) {
-          return parseFloat(priceString.replace(/[^\d.-]/g, '').replace(",", "."));
+          // Xóa mọi ký tự không phải số
+          return parseInt(priceString.replace(/[^\d]/g, ''), 10);
         }
 
+
         function formatPrice(price) {
-          const formattedPrice = price.toFixed(3).replace(/\d(?=(\d{3})+\.)/g, '$&,') + ' ₫';
+          const rounded = Math.round(price); // Làm tròn nếu cần
+          const formattedPrice = rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
           return formattedPrice;
         }
+
 
         // Clean feeShip and totalAmount values for calculation
         const cleanedFeeShip = cleanPrice(feeShip.innerText);
@@ -447,8 +451,16 @@
 
         const formattedFeeShip = formatPrice(cleanedFeeShip);
         const formattedTotalAmount = formatPrice(cleanedTotalAmount);
-        const discountValue = cleanPrice(discountVoucher.innerText);
-        const formattedDiscount = formatPrice(discountValue);
+        let rawDiscountText = discountVoucher.innerText.trim();
+        let formattedDiscount;
+
+        if (rawDiscountText.includes("%")) {
+          formattedDiscount = rawDiscountText;
+        } else {
+          const discountValue = cleanPrice(rawDiscountText);
+          formattedDiscount = formatPrice(discountValue);
+        }
+
 
         fetch("http://localhost:3000/email/sendInvoiceEmail", {
           method: "POST",
