@@ -54,20 +54,18 @@ public class OrderController {
         model.addAttribute("statistics", statistics);
         System.out.println(revenueStats);
         Map<String, Object> revenueYear = orderService.getYearlyRevenue();
+
         Object totalRevenueObj = revenueYear.get("totalRevenue");
         long totalRevenue = (totalRevenueObj instanceof Number) ? ((Number) totalRevenueObj).longValue() : 0;
-        // Định dạng số totalRevenue với dấu chấm làm phân cách hàng nghìn
-//        DecimalFormat formatter = new DecimalFormat("#.###");
-//        formatter.setGroupingUsed(true);
-//        formatter.setGroupingSize(3);
-//        formatter.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.GERMANY));
-//        String formattedRevenue = formatter.format(totalRevenue);
-//        System.out.println("Formatted Revenue: " + formattedRevenue);
-        // Truyền giá trị đã định dạng vào model
+        System.out.println(revenueYear);
         revenueYear.put("totalRevenueYear", totalRevenue);
-        model.addAttribute("totalOrdersYear", revenueYear.get("totalOrders"));
-        model.addAttribute("revenueYear", revenueYear);
 
+        Object totalRevenueTodayObj = revenueStats.get("totalRevenue");
+        long totalRevenueToday = (totalRevenueTodayObj instanceof Number) ? ((Number) totalRevenueTodayObj).longValue() : 0;
+        revenueStats.put("totalRevenueToday", totalRevenueToday);
+                model.addAttribute("totalOrdersYear", revenueYear.get("totalOrders"));
+        model.addAttribute("revenueYear", revenueYear);
+        model.addAttribute("revenueStats", revenueStats);
         UserDTO user = (UserDTO) session.getAttribute("user");
         if (user != null) {
             System.out.println(user.getName());

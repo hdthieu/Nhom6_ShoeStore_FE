@@ -29,15 +29,29 @@ public class VoucherServiceImpl implements VoucherService {
     private RestTemplate restTemplate;
     private static final String SERVER_URL = "http://localhost:8765/products/voucher";
     @Override
-    public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate) {
-        String url = String.format("%s/search?startDate=%s&endDate=%s", SERVER_URL,
-                startDate != null ? startDate : "",
-                endDate != null ? endDate : "");
+    public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate, String status) {
+        StringBuilder urlBuilder = new StringBuilder(SERVER_URL + "/search?");
 
-        // Gọi API và deserialize về array
+        if (startDate != null) {
+            urlBuilder.append("startDate=").append(startDate).append("&");
+        }
+        if (endDate != null) {
+            urlBuilder.append("endDate=").append(endDate).append("&");
+        }
+        if (status != null && !status.isEmpty()) {
+            urlBuilder.append("status=").append(status);
+        }
+
+        String url = urlBuilder.toString();
+        // Xoá dấu `&` nếu nó là ký tự cuối cùng
+        if (url.endsWith("&")) {
+            url = url.substring(0, url.length() - 1);
+        }
+
         VoucherDTO[] response = restTemplate.getForObject(url, VoucherDTO[].class);
         return Arrays.asList(response);
     }
+
 
     @Override
     public VoucherDTO addVoucher(VoucherDTO voucher) {
@@ -82,7 +96,5 @@ public class VoucherServiceImpl implements VoucherService {
         );
         return response.getBody();
     }
-
-
 
 }
