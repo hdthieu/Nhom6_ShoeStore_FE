@@ -22,7 +22,8 @@ public class VoucherController {
     @GetMapping("/search")
     public ResponseEntity<List<VoucherDTO>> searchVouchers(
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String status) {
 
         LocalDate start = null;
         LocalDate end = null;
@@ -35,13 +36,15 @@ public class VoucherController {
                 end = LocalDate.parse(endDate);
             }
         } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu không thể phân tích ngày
+            return ResponseEntity.badRequest().body(null);
         }
 
-        List<VoucherDTO> vouchers = voucherService.searchVouchers(start, end);
-        System.out.println(vouchers);
+        List<VoucherDTO> vouchers = voucherService.searchVouchers(start, end, status);
         return ResponseEntity.ok(vouchers);
     }
+
+
+
     @PostMapping("/add")
     public ResponseEntity<VoucherDTO> addVoucher(@RequestBody VoucherDTO voucherDTO) {
         // Thêm voucher vào cơ sở dữ liệu thông qua service
@@ -79,6 +82,7 @@ public class VoucherController {
         VoucherDTO updatedVoucher = voucherService.updateVoucher(id, voucher);
         return ResponseEntity.ok(updatedVoucher);
     }
+
 
 
 

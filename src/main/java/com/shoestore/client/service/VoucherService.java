@@ -13,5 +13,6 @@ public interface VoucherService {
     public void deleteVoucher(int voucherID);
     public VoucherDTO updateVoucher(int id, VoucherDTO voucher);
     public VoucherDTO getVoucherById(int id);
-    public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate);
+    public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate, String status);
+
 }
