@@ -25,5 +25,9 @@ public class ProductDTO {
     private SupplierDTO supplier;
     private List<ProductDetailDTO> productDetails;
     private LocalDateTime createDate;
+    public String getFormattedPrice() {
+        return String.format("%,.0f", price); // Đảm bảo format đúng giá trị thành chuỗi
+    }
+
 //    private PromotionDTO promotionDTO;
 }
