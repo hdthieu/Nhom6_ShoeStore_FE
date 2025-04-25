@@ -108,9 +108,7 @@
                     </div>
                   </div>
                   <div class="row mb-2">
-                    <div class="col-6 text-right">
-                      <strong>Thanh Toán:</strong>
-                    </div>
+
                     <div class="col-6">
                       <span id="orderPayment" style=" background: yellow;" th:text="${orderDetail['paymentStatus']}"></span>
                     </div>
@@ -132,13 +130,15 @@
                   <div class="row mb-2">
                     <div class="col-6 text-right"><strong>Giảm giá:</strong></div>
                     <div class="col-6">
-                      <span id="discount"
-                            th:text="${orderDetail.voucher == null
-                  ? 'Không áp dụng'
-                  : (orderDetail.voucher.discountType == 'Percentage'
-                      ? orderDetail.voucher.discountValue + ' %'
-                      : orderDetail.voucher.discountValue)}">
-</span>
+        <span id="discount"
+              th:text="${orderDetail.voucher != null
+                ? (orderDetail.voucher.discountValue == null || orderDetail.voucher.discountValue == 0
+                    ? '0.0 ₫'
+                    : (orderDetail.voucher.discountType == 'Percentage'
+                        ? orderDetail.voucher.discountValue + ' %'
+                        : orderDetail.voucher.discountValue + ' ₫'))
+                : 'Không có voucher'}">
+        </span>
                     </div>
                   </div>
 
@@ -375,32 +375,68 @@
         const priceElements = document.querySelectorAll('[id^="price-"]');
         const totalElements = document.querySelectorAll('[id^="total-"]');
 
+        // Hàm định dạng tiền tệ
+        function formatCurrency(value) {
+          return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        }
+
+        // Hàm kiểm tra giá trị hợp lệ
+        function isValidNumber(value) {
+          return !isNaN(value) && value != null;
+        }
+
         // Định dạng và hiển thị lại giá trị
         if (feeShip) {
-          // Loại bỏ dấu phân cách ngàn và chuyển thành số, làm tròn trước khi định dạng
-          feeShip.textContent = formatCurrency(Math.round(parseFloat(feeShip.textContent)));
+          let feeShipValue = parseFloat(feeShip.textContent);
+          if (isValidNumber(feeShipValue)) {
+            feeShip.textContent = formatCurrency(Math.round(feeShipValue));
+          } else {
+            feeShip.textContent = '0 ₫';  // Giá trị mặc định khi không có phí vận chuyển
+          }
         }
 
         if (discount) {
-          const discountText = discount.textContent;
-          if (discountText.includes('%')) {
-            const discountPercentage = parseFloat(discountText.replace('%', '').trim());
-            discount.textContent = discountPercentage + ' %';
+          let discountValue = parseFloat(discount.textContent);
+          if (isValidNumber(discountValue)) {
+            // Nếu có giá trị giảm giá, định dạng theo tiền tệ hoặc phần trăm
+            if (discount.textContent.includes('%')) {
+              discount.textContent = discountValue + ' %';
+            } else {
+              discount.textContent = formatCurrency(Math.round(discountValue));
+            }
           } else {
-            discount.textContent = formatCurrency(Math.round(parseFloat(discount.textContent)));
+            discount.textContent = '0.0 ₫';  // Hiển thị 0.0 ₫ nếu không có giảm giá
           }
         }
 
         if (totalPayable) {
-          totalPayable.textContent = formatCurrency(Math.round(parseFloat(totalPayable.textContent)));
+          let totalPayableValue = parseFloat(totalPayable.textContent);
+          if (isValidNumber(totalPayableValue)) {
+            totalPayable.textContent = formatCurrency(Math.round(totalPayableValue));
+          } else {
+            totalPayable.textContent = '0 ₫';  // Giá trị mặc định khi không có tổng thanh toán
+          }
         }
+
         priceElements.forEach(element => {
-          element.textContent = formatCurrency(Math.round(parseFloat(element.textContent)));
+          let priceValue = parseFloat(element.textContent);
+          if (isValidNumber(priceValue)) {
+            element.textContent = formatCurrency(Math.round(priceValue));
+          } else {
+            element.textContent = '0 ₫';  // Giá trị mặc định khi không có giá
+          }
         });
+
         totalElements.forEach(element => {
-          element.textContent = formatCurrency(Math.round(parseFloat(element.textContent)));
+          let totalValue = parseFloat(element.textContent);
+          if (isValidNumber(totalValue)) {
+            element.textContent = formatCurrency(Math.round(totalValue));
+          } else {
+            element.textContent = '0 ₫';  // Giá trị mặc định khi không có tổng giá trị
+          }
         });
       });
+
 
       document.getElementById("printInvoiceButton").addEventListener("click", function() {
         const orderID = document.getElementById("orderID");
@@ -411,8 +447,8 @@
         const customerName = document.getElementById("customerName");
         const customerPhone = document.getElementById("customerPhone");
         const customerAddress = document.getElementById("customerAddress");
-        const discountVoucher =   document.getElementById('discount');
-        const customerEmail = "hoductrihieu@gmail.com";
+        const discountVoucher = document.getElementById('discount');
+        const customerEmail = document.getElementById('customerEmail').innerText;  // Lấy email khách hàng từ DOM
 
         if (!orderID || !orderStatus || !feeShip || !totalAmount || !customerName || !customerPhone || !customerAddress || !customerEmail || !discountVoucher || !orderPayment) {
           alert("Một số thông tin hóa đơn thiếu hoặc không tồn tại.");
@@ -420,19 +456,14 @@
         }
 
         function cleanPrice(priceString) {
-          // Xóa mọi ký tự không phải số
           return parseInt(priceString.replace(/[^\d]/g, ''), 10);
         }
 
-
         function formatPrice(price) {
-          const rounded = Math.round(price); // Làm tròn nếu cần
-          const formattedPrice = rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
-          return formattedPrice;
+          const rounded = Math.round(price);
+          return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
         }
 
-
-        // Clean feeShip and totalAmount values for calculation
         const cleanedFeeShip = cleanPrice(feeShip.innerText);
         const cleanedTotalAmount = cleanPrice(totalAmount.innerText);
         const totalElements = document.querySelectorAll('[id^="total-"]');
@@ -464,7 +495,6 @@
           formattedDiscount = formatPrice(discountValue);
         }
 
-
         fetch("http://localhost:3000/email/sendInvoiceEmail", {
           method: "POST",
           headers: {
@@ -479,7 +509,7 @@
             customerName: customerName.innerText,
             customerPhone: customerPhone.innerText,
             customerAddress: customerAddress.innerText,
-            email: customerEmail,
+            email: customerEmail,  // Truyền email khách hàng đúng
             discountVoucher: formattedDiscount,
             products: products
           })
@@ -493,6 +523,7 @@
                   alert("Đã có lỗi xảy ra!");
                 });
       });
+
 
 
       document.addEventListener("DOMContentLoaded", () => {
