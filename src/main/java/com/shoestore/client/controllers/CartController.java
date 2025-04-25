@@ -90,29 +90,24 @@ public class CartController {
 
         int userId = user.getUserID();
         CartDTO cartDTO = cartService.getCartByUserId(userId);
+        if (cartDTO == null) {
+            // Nếu giỏ hàng chưa tồn tại, xử lý tùy vào logic hệ thống của bạn
+            return "redirect:/customer/cart/show";
+        }
 
         CartItemDTO.IdDTO idDTO = new CartItemDTO.IdDTO(cartDTO.getCartID(), productDetailID);
-        CartItemDTO existingCartItem = cartItemService.getCartItemById(idDTO);
-        ProductDTO productDTO = productService.getProductByProductDetail(productDetailID);
 
-        if (existingCartItem != null) {
-            int updatedQuantity = existingCartItem.getQuantity() + quantity;
-            double updatedSubTotal = updatedQuantity * productDTO.getPrice();
-            existingCartItem.setQuantity(updatedQuantity);
-            existingCartItem.setSubTotal(updatedSubTotal);
-            cartItemService.updateCartItem(idDTO, existingCartItem);
-        } else {
-            CartItemDTO newCartItem = new CartItemDTO();
-            newCartItem.setId(idDTO);
-            newCartItem.setQuantity(quantity);
-            double price = productDTO.getPrice();
-            double subTotal = price * quantity;
-            newCartItem.setSubTotal(subTotal);
+        // Tạo CartItemDTO mới
+        CartItemDTO newCartItem = new CartItemDTO();
+        newCartItem.setId(idDTO);
+        newCartItem.setQuantity(quantity);
+        newCartItem.setCart(cartDTO);
+        newCartItem.setProductDetailDTO(productDetailService.getProductDetailById(productDetailID));
 
-            ProductDetailDTO productDetailDTO = productDetailService.getProductDetailById(productDetailID);
-            newCartItem.setCart(cartDTO);
-            newCartItem.setProductDetailDTO(productDetailDTO);
-            cartItemService.addCartItem(newCartItem);
+        try {
+            cartClient.addCartItem(newCartItem);  // Gọi tới BE qua Feign
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi khi gọi CartClient.addCartItem: " + e.getMessage());
         }
 
         return "redirect:/customer/cart/show";
