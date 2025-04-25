@@ -53,12 +53,13 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     public ProductDTO getProductByProductDetail(int id) {
-        String apiUrl="http://localhost:8765/products/detailsId/"+id;
-        ResponseEntity<ProductDTO> response= restTemplate.exchange(
-                apiUrl, HttpMethod.GET,null, ProductDTO.class
+        String apiUrl = "http://localhost:8765/products-details/productDetailId/" + id;
+        ResponseEntity<ProductDTO> response = restTemplate.exchange(
+                apiUrl, HttpMethod.GET, null, ProductDTO.class
         );
         return response.getBody();
     }
+
 
 
     @Override

@@ -12,7 +12,7 @@ import java.util.List;
 public class CartDTO {
   private int cartID;
 //  private LocalDateTime createAt;
-//  private List<CartItemResponseDTO> cartItems;
+  private List<CartItemResponseDTO> cartItems;
 //  private UserDTO user;
 
   public CartDTO(int cartID) {

@@ -69,20 +69,25 @@
         <h4 class="checkout-summary__title">Order Summary</h4>
 
         <div th:each="product : ${ProductDetailCheckoutDTO}" class="checkout-summary__item">
-            <img th:src="@{'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}}"
-                 alt="Product Image"
-                 class="checkout-summary__image">
+<!--            <img th:src="@{'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}}"-->
+<!--                 alt="Product Image"-->
+<!--                 class="checkout-summary__image">-->
             <!--            <span th:text="'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}"></span>-->
             <div class="checkout-summary__details">
                 <p th:text="${product.name}" class="checkout-summary__product-name"></p>
                 <p th:text="${product.productDetailDTO.color+' / '+product.productDetailDTO.size.sizeValue}"
                    class="checkout-summary__product-variant"></p>
-                <p class="checkout-summary__product-variant" th:text="${product.price}+' x '+${product.quantity}"></p>
+                <p class="checkout-summary__product-variant"
+                   th:text="${product.price != null ? product.price : product.productDetailDTO.price} + ' x ' + ${product.quantity}">
+                </p>
             </div>
             <p class="checkout-summary__price" th:text="${product.price* product.quantity}"></p>
             <input type="hidden" th:value="${product.price}" class="product-price">
             <input type="hidden" th:value="${product.quantity}" class="product-quantity">
-            <input type="hidden" th:value="${product.productDetailDTO}" class="product-detail-dto">
+            <input type="hidden" th:value="${product.productDetailDTO.productDetailID}" class="product-detail-dto">
+
+            <input type="hidden" id="userID" th:value="${user.userID}" />
+
         </div>
 
 
@@ -115,85 +120,207 @@
     </div>
 </div>
 
+<!--<script>-->
+<!--    document.getElementById("orderButton").addEventListener("click", function () {-->
+<!--        // Lấy các thông tin khác như address, total, delivery-->
+<!--        const address = document.getElementById("address").value; // Giá trị addressID được chọn-->
+<!--        let total = document.getElementById("total").innerText.trim(); // Tổng tiền-->
+<!--        let delivery = document.getElementById("delivery").innerText.trim(); // Phí giao hàng-->
+
+<!--        // Xử lý phí giao hàng (delivery)-->
+<!--        delivery = delivery === "FREE" ? 0 : parseInt(delivery.replace(/\D/g, ""));-->
+
+<!--        // Loại bỏ " VND" khỏi tổng tiền-->
+<!--        total = parseInt(total.replace(/\D/g, ""));-->
+
+<!--        let productDetails = [];-->
+<!--        document.querySelectorAll('.checkout-summary__item').forEach(item => {-->
+<!--            const product = {-->
+<!--                price: parseFloat(item.querySelector('.product-price').value),-->
+<!--                quantity: parseInt(item.querySelector('.product-quantity').value),-->
+<!--                productDetailId: parseInt(item.querySelector('.product-detail-dto').value)-->
+
+<!--            };-->
+<!--            productDetails.push(product);-->
+<!--        });-->
+<!--        const paymentOption = document.querySelector('input[name="payment"]:checked');-->
+<!--        if (!paymentOption) {-->
+<!--            alert("Vui lòng chọn phương thức thanh toán!");-->
+<!--            return;-->
+<!--        }-->
+<!--        const paymentcase = paymentOption.value === "vnpay" ? 1 : 2;-->
+<!--        console.log(paymentcase)-->
+<!--        // Kiểm tra xem đã có đầy đủ thông tin chưa-->
+<!--        if (!address) {-->
+<!--            alert("Vui lòng chọn địa chỉ giao hàng!");-->
+<!--            return;-->
+<!--        }-->
+
+<!--        // Tạo URL với query parameters-->
+<!--        const url = "/payment/add"; // URL controller của bạn-->
+<!--        const params = new URLSearchParams();-->
+<!--        params.append("address", parseInt(address));-->
+<!--        params.append("total", total);-->
+<!--        params.append("delivery", delivery);-->
+<!--        const userID = parseInt(document.getElementById("userID").value);-->
+
+<!--        // Gửi dữ liệu productDetails dưới dạng JSON trong body-->
+<!--        const requestData = {-->
+<!--            address: parseInt(address),-->
+<!--            total: total,-->
+<!--            delivery: delivery,-->
+<!--            productDetails: productDetails,-->
+<!--            paymentCase: parseInt(paymentcase),-->
+<!--            user: {-->
+<!--                userID: parseInt(userID)-->
+<!--            }-->
+<!--        };-->
+<!--        console.log("Dữ liệu gửi:", requestData);-->
+<!--        // Gửi POST request-->
+<!--        fetch(url, {-->
+<!--            method: "POST",-->
+<!--            headers: {-->
+<!--                "Content-Type": "application/json",-->
+<!--            },-->
+<!--            body: JSON.stringify(requestData),-->
+<!--        })-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                console.log("Đơn hàng đã tạo:", data);-->
+
+<!--                // Gọi tiếp API cập nhật paymentID cho đơn hàng-->
+<!--                const orderId = data.id;-->
+<!--                const paymentID = data.paymentID; // đảm bảo backend trả về cả paymentID-->
+
+<!--                if (paymentID) {-->
+<!--                    fetch(`/Order/updatePayment/${orderId}?paymentID=${paymentID}`, {-->
+<!--                        method: "PUT"-->
+<!--                    })-->
+<!--                        .then(updateRes => {-->
+<!--                            if (updateRes.ok) {-->
+<!--                                $('#orderSuccessModal').modal('show');-->
+<!--                                setTimeout(() => window.location.href = "/customer/product-search", 3000);-->
+<!--                            } else {-->
+<!--                                alert("Đơn hàng được tạo nhưng cập nhật paymentID thất bại.");-->
+<!--                            }-->
+<!--                        });-->
+<!--                } else {-->
+<!--                    $('#orderSuccessModal').modal('show');-->
+<!--                    setTimeout(() => window.location.href = "/customer/product-search", 3000);-->
+<!--                }-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error("Lỗi:", error);-->
+<!--                alert("Có lỗi xảy ra khi thanh toán!");-->
+<!--            });-->
+
+<!--    });-->
+
+
+<!--</script>-->
+<!--<script>-->
+<!--    document.getElementById("orderButton").addEventListener("click", function () {-->
+<!--        const address = document.getElementById("address").value;-->
+<!--        let total = parseInt(document.getElementById("total").innerText.replace(/\D/g, ""));-->
+<!--        let delivery = document.getElementById("delivery").innerText.trim();-->
+<!--        delivery = delivery === "FREE" ? 0 : parseInt(delivery.replace(/\D/g, ""));-->
+
+<!--        const userID = parseInt(document.getElementById("userID").value);-->
+<!--        const paymentOption = document.querySelector('input[name="payment"]:checked');-->
+<!--        if (!paymentOption) return alert("Vui lòng chọn phương thức thanh toán!");-->
+<!--        const paymentCase = paymentOption.value === "vnpay" ? 1 : 2;-->
+
+<!--        let productDetails = [];-->
+<!--        document.querySelectorAll('.checkout-summary__item').forEach(item => {-->
+<!--            productDetails.push({-->
+<!--                price: parseFloat(item.querySelector('.product-price').value),-->
+<!--                quantity: parseInt(item.querySelector('.product-quantity').value),-->
+<!--                productDetailId: parseInt(item.querySelector('.product-detail-dto').value)-->
+<!--            });-->
+<!--        });-->
+
+<!--        const data = {-->
+<!--            address: parseInt(address),-->
+<!--            total, delivery,-->
+<!--            productDetails,-->
+<!--            paymentCase,-->
+<!--            user: { userID }-->
+<!--        };-->
+
+<!--        fetch("/payment/add", {-->
+<!--            method: "POST",-->
+<!--            headers: { "Content-Type": "application/json" },-->
+<!--            body: JSON.stringify(data)-->
+<!--        })-->
+<!--            .then(response => response.json())-->
+<!--            .then(result => {-->
+<!--                const { id: orderId, paymentID, paymentCase } = result;-->
+
+<!--                fetch(`/Order/updatePayment/${orderId}?paymentID=${paymentID}`, { method: "PUT" });-->
+
+<!--                if (paymentCase === 1) {-->
+<!--                    // Gọi BE để tạo URL thanh toán VNPay-->
+<!--                    window.location.href = `/payment/vnpay?orderId=${orderId}&amount=${total}`;-->
+<!--                } else {-->
+<!--                    $('#orderSuccessModal').modal('show');-->
+<!--                    setTimeout(() => window.location.href = "/customer/product-search", 3000);-->
+<!--                }-->
+<!--            })-->
+<!--            .catch(err => {-->
+<!--                console.error("Lỗi thanh toán:", err);-->
+<!--                alert("Có lỗi xảy ra khi thanh toán!");-->
+<!--            });-->
+<!--    });-->
+
+<!--</script>-->
 <script>
     document.getElementById("orderButton").addEventListener("click", function () {
-        // Lấy các thông tin khác như address, total, delivery
-        const address = document.getElementById("address").value; // Giá trị addressID được chọn
-        let total = document.getElementById("total").innerText.trim(); // Tổng tiền
-        let delivery = document.getElementById("delivery").innerText.trim(); // Phí giao hàng
-
-        // Xử lý phí giao hàng (delivery)
+        const address = document.getElementById("address").value;
+        let total = parseInt(document.getElementById("total").innerText.replace(/\D/g, ""));
+        let delivery = document.getElementById("delivery").innerText.trim();
         delivery = delivery === "FREE" ? 0 : parseInt(delivery.replace(/\D/g, ""));
-
-        // Loại bỏ " VND" khỏi tổng tiền
-        total = parseInt(total.replace(/\D/g, ""));
+        const userID = parseInt(document.getElementById("userID").value);
+        const paymentOption = document.querySelector('input[name="payment"]:checked');
+        if (!paymentOption) return alert("Vui lòng chọn phương thức thanh toán!");
+        const paymentCase = paymentOption.value === "vnpay" ? 1 : 2;
 
         let productDetails = [];
         document.querySelectorAll('.checkout-summary__item').forEach(item => {
-            const product = {
+            productDetails.push({
                 price: parseFloat(item.querySelector('.product-price').value),
                 quantity: parseInt(item.querySelector('.product-quantity').value),
-                productDetailId: item.querySelector('.product-detail-dto').value
-            };
-            productDetails.push(product);
+                productDetailId: parseInt(item.querySelector('.product-detail-dto').value)
+            });
         });
-        const paymentOption = document.querySelector('input[name="payment"]:checked');
-        if (!paymentOption) {
-            alert("Vui lòng chọn phương thức thanh toán!");
-            return;
-        }
-        const paymentcase = paymentOption.value === "vnpay" ? 1 : 2;
-        console.log(paymentcase)
-        // Kiểm tra xem đã có đầy đủ thông tin chưa
-        if (!address) {
-            alert("Vui lòng chọn địa chỉ giao hàng!");
-            return;
-        }
 
-        // Tạo URL với query parameters
-        const url = "/order/payment/add"; // URL controller của bạn
-        const params = new URLSearchParams();
-        params.append("address", parseInt(address));
-        params.append("total", total);
-        params.append("delivery", delivery);
-
-        // Gửi dữ liệu productDetails dưới dạng JSON trong body
-        const requestData = {
+        const data = {
             address: parseInt(address),
-            total: total,
-            delivery: delivery,
-            productDetails: productDetails,
-            paymentCase: parseInt(paymentcase),
+            total, delivery,
+            productDetails,
+            paymentCase,
+            user: { userID }
         };
 
-        // Gửi POST request
-        fetch(url, {
+        fetch("/payment/add", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
         })
-            .then(response => {
-                if (response.ok) {
-                    console.log("thành công")
-                    // Hiển thị modal thông báo thành công
-                    $('#orderSuccessModal').modal('show'); // Hiển thị modal
-                    // Chuyển hướng sau 2 giây
-                    setTimeout(function() {
-                        window.location.href = "/customer/product-search";  // Chuyển hướng đến trang tìm kiếm
-                    }, 3000);
+            .then(response => response.json())
+            .then(result => {
+                if (result.redirect) {
+                    window.location.href = result.paymentUrl;
                 } else {
-                    // Xử lý nếu có lỗi trong quá trình gửi yêu cầu
-                    alert("Có lỗi xảy ra, vui lòng thử lại!");
+                    fetch(`/Order/updatePayment/${result.orderId}?paymentID=${result.paymentID}`, { method: "PUT" });
+                    $('#orderSuccessModal').modal('show');
+                    setTimeout(() => window.location.href = "/customer/product-search", 3000);
                 }
             })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("Có lỗi xảy ra, vui lòng thử lại!");
+            .catch(err => {
+                console.error("Lỗi thanh toán:", err);
+                alert("Có lỗi xảy ra khi thanh toán!");
             });
     });
-
 
 </script>
 </body>

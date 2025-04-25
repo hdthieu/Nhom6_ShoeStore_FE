@@ -1,0 +1,29 @@
+package com.shoestore.client.client;
+
+import com.shoestore.client.dto.request.ProductDetailDTO;
+import com.shoestore.client.dto.response.ProductSingleResponseDTO;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.Map;
+import java.util.List;
+
+@FeignClient(name = "PRODUCT-SERVICE", url = "http://localhost:8765/products-details")
+public interface ProductClient {
+
+    // Lấy ProductDetail theo productDetailId
+    @GetMapping("/productDetailId/{id}")
+    ProductDetailDTO getProductDetailById(@PathVariable("id") Integer id);
+
+    // Lấy danh sách ProductDetail theo ProductID (trả về Map với key = "productDetails")
+    @GetMapping("/{productId}")
+    Map<String, List<ProductDetailDTO>> getProductDetailsByProductId(@PathVariable("productId") Integer productId);
+
+    // Lấy thông tin Product (gọi endpoint khác nếu cần chi tiết)
+    @GetMapping("/products/detailFor/{id}")
+    ProductSingleResponseDTO getProductById(@PathVariable("id") Integer id);
+}
+
+

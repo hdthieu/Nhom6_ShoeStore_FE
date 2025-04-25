@@ -1,5 +1,6 @@
 package com.shoestore.client.controllers;
 
+import com.shoestore.client.client.CartClient;
 import com.shoestore.client.dto.request.*;
 import com.shoestore.client.dto.response.CartItemResponseDTO;
 import com.shoestore.client.service.CartItemService;
@@ -29,7 +30,8 @@ public class CartController {
     private ProductDetailService productDetailService;
     @Autowired
     private HttpSession session;
-
+    @Autowired
+    private CartClient cartClient;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,###");
 
     @GetMapping("/show")
@@ -44,10 +46,21 @@ public class CartController {
         }
 
         int userId = user.getUserID();
-        List<CartItemResponseDTO> cartItems = cartItemService.getCartItemsByCartId(userId);
-        cartItems.forEach((item) -> {
+
+        // Gọi cart-service để lấy giỏ hàng qua FeignClient
+        CartDTO cartDTO = cartClient.getCartByUserId(userId);
+        if (cartDTO == null || cartDTO.getCartItems() == null) {
+            model.addAttribute("cartItems", List.of()); // Trả về danh sách rỗng nếu không có gì
+            return "page/Customer/Cart";
+        }
+
+        List<CartItemResponseDTO> cartItems = cartDTO.getCartItems();
+
+        // Bổ sung thông tin sản phẩm cho từng item
+        cartItems.forEach(item -> {
             ProductDTO productDTO = productService.getProductByProductDetail(item.getId().getProductDetailId());
             ProductDetailDTO productDetailDTO = productDetailService.getProductDetailById(item.getId().getProductDetailId());
+
             item.setProductName(productDTO.getProductName());
             item.setProductImage(productDTO.getImageURL());
             item.setProductPrice(productDTO.getPrice());
@@ -60,6 +73,7 @@ public class CartController {
         model.addAttribute("cartItems", cartItems);
         return "page/Customer/Cart";
     }
+
 
     @PostMapping("/add")
     public String addCartItem(@RequestParam("productDetailID") int productDetailID,
@@ -76,29 +90,24 @@ public class CartController {
 
         int userId = user.getUserID();
         CartDTO cartDTO = cartService.getCartByUserId(userId);
+        if (cartDTO == null) {
+            // Nếu giỏ hàng chưa tồn tại, xử lý tùy vào logic hệ thống của bạn
+            return "redirect:/customer/cart/show";
+        }
 
         CartItemDTO.IdDTO idDTO = new CartItemDTO.IdDTO(cartDTO.getCartID(), productDetailID);
-        CartItemDTO existingCartItem = cartItemService.getCartItemById(idDTO);
-        ProductDTO productDTO = productService.getProductByProductDetail(productDetailID);
 
-        if (existingCartItem != null) {
-            int updatedQuantity = existingCartItem.getQuantity() + quantity;
-            double updatedSubTotal = updatedQuantity * productDTO.getPrice();
-            existingCartItem.setQuantity(updatedQuantity);
-            existingCartItem.setSubTotal(updatedSubTotal);
-            cartItemService.updateCartItem(idDTO, existingCartItem);
-        } else {
-            CartItemDTO newCartItem = new CartItemDTO();
-            newCartItem.setId(idDTO);
-            newCartItem.setQuantity(quantity);
-            double price = productDTO.getPrice();
-            double subTotal = price * quantity;
-            newCartItem.setSubTotal(subTotal);
+        // Tạo CartItemDTO mới
+        CartItemDTO newCartItem = new CartItemDTO();
+        newCartItem.setId(idDTO);
+        newCartItem.setQuantity(quantity);
+        newCartItem.setCart(cartDTO);
+        newCartItem.setProductDetailDTO(productDetailService.getProductDetailById(productDetailID));
 
-            ProductDetailDTO productDetailDTO = productDetailService.getProductDetailById(productDetailID);
-            newCartItem.setCart(cartDTO);
-            newCartItem.setProductDetailDTO(productDetailDTO);
-            cartItemService.addCartItem(newCartItem);
+        try {
+            cartClient.addCartItem(newCartItem);  // Gọi tới BE qua Feign
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi khi gọi CartClient.addCartItem: " + e.getMessage());
         }
 
         return "redirect:/customer/cart/show";
@@ -107,8 +116,7 @@ public class CartController {
     @DeleteMapping("/delete/{cartId}/{productDetailId}")
     public String deleteCartItem(@PathVariable("cartId") int cartId,
                                  @PathVariable("productDetailId") int productDetailId) {
-        CartItemDTO.IdDTO id = new CartItemDTO.IdDTO(cartId, productDetailId);
-        cartItemService.deleteCartItem(id);
+        cartClient.deleteCartItem(cartId, productDetailId); // Gọi qua Feign
         return "redirect:/customer/cart/show";
     }
 }
