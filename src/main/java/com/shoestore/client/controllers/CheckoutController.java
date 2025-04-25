@@ -2,6 +2,7 @@ package com.shoestore.client.controllers;
 
 import com.shoestore.client.client.OrderClient;
 import com.shoestore.client.client.PaymentClient;
+import com.shoestore.client.client.ProductClient;
 import com.shoestore.client.dto.request.*;
 import com.shoestore.client.dto.response.PaymentResponseDTO;
 import com.shoestore.client.dto.response.ProductDetailCheckoutDTO;
@@ -29,7 +30,7 @@ public class CheckoutController {
     @Autowired private HttpSession session;
     @Autowired private OrderClient orderClient;
     @Autowired private PaymentClient paymentClient;
-
+@Autowired private ProductClient productClient;
     @GetMapping("/checkout")
     public String showFormCheckoutFromCart(@RequestParam("id") List<Integer> productDetailId,
                                            @RequestParam("quantity") List<Integer> quantities,
@@ -114,6 +115,29 @@ public class CheckoutController {
         Integer paymentCase = Integer.parseInt(payload.get("paymentCase").toString());
         List<Map<String, Object>> productDetails = (List<Map<String, Object>>) payload.get("productDetails");
 
+
+        String voucherCode = (payload.get("voucherCode") != null) ? payload.get("voucherCode").toString().trim() : null;
+        Integer voucherID = null;
+
+        // ✅ Gọi BE để lấy thông tin voucher và lấy voucherID
+        if (voucherCode != null && !voucherCode.isEmpty()) {
+            try {
+                VoucherDTO voucher = productClient.checkVoucherByCode(voucherCode);
+                if (voucher != null && LocalDate.now().isBefore(voucher.getEndDate())
+                        && total >= voucher.getMinValueOrder()) {
+
+                    double discount = voucher.getDiscountType().equalsIgnoreCase("PERCENT")
+                            ? total * voucher.getDiscountValue() / 100
+                            : voucher.getDiscountValue();
+
+                    total -= (int) discount;
+                    voucherID = voucher.getVoucherID(); // ✅ Gán vào order
+                }
+            } catch (Exception e) {
+                System.out.println("❌ Voucher không hợp lệ hoặc đã hết hạn: " + voucherCode);
+            }
+        }
+
         AddressDTO address = addressService.getAddressById(addressId);
         String shippingAddress = formatAddress(address);
 
@@ -124,7 +148,7 @@ public class CheckoutController {
         order.setUser(user);
         order.setStatus("Processing");
         order.setShippingAddress(shippingAddress);
-
+        order.setVoucherID(voucherID);
         OrderCheckoutDTO savedOrder = orderClient.createOrder(order);
 
         for (Map<String, Object> productDetail : productDetails) {

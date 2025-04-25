@@ -86,15 +86,26 @@
             <input type="hidden" th:value="${product.quantity}" class="product-quantity">
             <input type="hidden" th:value="${product.productDetailDTO.productDetailID}" class="product-detail-dto">
 
+
             <input type="hidden" id="userID" th:value="${user.userID}" />
 
         </div>
 
-
+        <!-- VOUCHER INPUT -->
+        <div class="checkout-summary__voucher mb-3">
+            <label for="voucherInput">Enter Voucher Code:</label>
+            <div class="input-group">
+                <input type="text" id="voucherInput" class="form-control" placeholder="e.g. GIAM10">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" id="applyVoucherBtn">Apply</button>
+                </div>
+            </div>
+            <small id="voucherMessage" style="color: green;"></small>
+        </div>
         <div class="checkout-summary__totals">
             <p class="checkout-summary__subtotal">Subtotal <span th:text="${subTotal}"></span></p>
             <p class="checkout-summary__shipping">Shipping <span th:text="${delivery}" id="delivery"></span></p>
-            <p class="checkout-summary__taxes">Estimated taxes <span>222.50VNĐ</span></p>
+<!--            <p class="checkout-summary__taxes">Estimated taxes <span>222.50VNĐ</span></p>-->
             <h4 class="checkout-summary__total">Total <span th:text="${total}+' VND'" id="total"></span></h4>
         </div>
     </div>
@@ -274,6 +285,56 @@
 
 <!--</script>-->
 <script>
+    let appliedVoucher = null;
+    let voucherDiscount = 0;
+    const fixedDelivery = 50000;
+    const code = document.getElementById("voucherInput").value.trim();
+    document.getElementById("delivery").innerText = "50,000 VNĐ";
+    document.getElementById("applyVoucherBtn").addEventListener("click", () => {
+        const code = document.getElementById("voucherInput").value.trim();
+        if (!code) return alert("Please enter a voucher code");
+
+        fetch(`http://localhost:8765/products/voucher/check?code=${code}`)
+            .then(async res => {
+                const data = await res.text();
+                if (!res.ok) throw new Error(data);
+                return JSON.parse(data); // hoặc nếu response là JSON: await res.json()
+            })
+            .then(voucher => {
+                appliedVoucher = voucher;
+                const subTotal = parseInt(document.querySelector(".checkout-summary__subtotal span").innerText.replace(/\D/g, ""));
+
+                if (subTotal < voucher.minValueOrder) {
+                    document.getElementById("voucherMessage").innerText = "Minimum order not met!";
+                    appliedVoucher = null;
+                    voucherDiscount = 0;
+                    return;
+                }
+
+                if (voucher.discountType === "PERCENTAGE") {
+                    voucherDiscount = Math.floor(subTotal * voucher.discountValue / 100);
+                } else if (voucher.discountType === "FLAT") {
+                    voucherDiscount = voucher.discountValue;
+                } else {
+                    throw new Error("Loại giảm giá không hợp lệ");
+                }
+
+                document.getElementById("voucherMessage").innerText = `Applied: -${voucherDiscount} VND`;
+
+                const shipping = parseInt(document.getElementById("delivery").innerText.replace(/\D/g, "")) || 0;
+                const total = subTotal + fixedDelivery - voucherDiscount;
+                document.getElementById("total").innerText = total.toLocaleString('vi-VN') + " VND";
+            })
+            .catch(err => {
+                appliedVoucher = null;
+                voucherDiscount = 0;
+                document.getElementById("voucherMessage").innerText = err.message || "Invalid or expired voucher";
+            });
+    });
+
+
+
+    // ✅ Gửi đơn hàng (bao gồm cả mã giảm giá)
     document.getElementById("orderButton").addEventListener("click", function () {
         const address = document.getElementById("address").value;
         let total = parseInt(document.getElementById("total").innerText.replace(/\D/g, ""));
@@ -293,14 +354,23 @@
             });
         });
 
+        const voucherCode = document.getElementById("voucherInput").value.trim();
+
         const data = {
             address: parseInt(address),
-            total, delivery,
+            total,
+            delivery: 50000,
             productDetails,
             paymentCase,
+            voucherCode: voucherCode || null,
+            voucherDiscount: voucherDiscount || 0,
             user: { userID }
         };
-
+        if (appliedVoucher) {
+            data.voucherID = appliedVoucher.voucherID; // ✅ Gửi voucherID kèm đơn hàng
+        }
+        // Show loading spinner
+        document.getElementById("loadingOverlay").style.display = "flex";
         fetch("/payment/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -308,6 +378,7 @@
         })
             .then(response => response.json())
             .then(result => {
+                document.getElementById("loadingOverlay").style.display = "none"; // Hide spinner
                 if (result.redirect) {
                     window.location.href = result.paymentUrl;
                 } else {
@@ -321,8 +392,23 @@
                 alert("Có lỗi xảy ra khi thanh toán!");
             });
     });
-
 </script>
+<div id="loadingOverlay" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+">
+    <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Tải jQuery (nếu chưa có) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
