@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -62,12 +63,16 @@ public class CartController {
             ProductDetailDTO productDetailDTO = productDetailService.getProductDetailById(item.getId().getProductDetailId());
 
             item.setProductName(productDTO.getProductName());
-            item.setProductImage(productDTO.getImageURL());
+//            item.setProductImage(productDTO.getImageURL());
             item.setProductPrice(productDTO.getPrice());
             item.setColor(productDetailDTO.getColor());
             item.setSize(productDetailDTO.getSize());
             item.setProductId(productDTO.getProductID());
             item.setStockQuantity(productDetailDTO.getStockQuantity());
+            if (productDTO.getImageURL() != null && !productDTO.getImageURL().isEmpty()) {
+                item.setProductImage(productDTO.getImageURL());  // ✅ Lấy đúng 1 ảnh đầu tiên
+            }
+
         });
 
         model.addAttribute("cartItems", cartItems);

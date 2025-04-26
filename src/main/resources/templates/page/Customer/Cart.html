@@ -22,12 +22,20 @@
             <div class="cart-item__checkbox">
                 <input type="checkbox" class="cart-item__checkbox-input" th:value="${cartItem.id.productDetailId}"/>
             </div>
-            <div class="cart-item__image-wrapper">
-                <!-- Dynamically set image source -->
-<!--                <img th:src="@{'http://localhost:8080/ImageProduct/' + ${cartItem.productId} + '/' + ${cartItem.productImage.get(0)}}" alt="Product Image" class="cart-item__image">-->
+
+                <img th:if="${cartItem.productImage != null}"
+                     th:src="@{'http://localhost:8765/ImageProduct/' + ${cartItem.productId} + '/' + ${cartItem.productImage}}"
+                     class="cart-item__image"
+                     width="100" height="150"
+                     style="object-fit: cover;"
+                     onerror="this.src='/images/no-image.png'" />
+            <p th:text="'Debug image URL: http://localhost:8765/ImageProduct/' + ${cartItem.productId} + '/' + ${cartItem.productImage}"></p>
 
 
-            </div>
+
+
+
+
             <div class="cart-item__details">
                 <h4 class="cart-item__name" th:text="${cartItem.productName}"></h4>
                 <span th:class="cart-item__stock--out" th:text="'Stock quantity: '+${cartItem.stockQuantity}"></span>
@@ -65,24 +73,24 @@
     </div>
 
     <div class="cart-summary">
-        <h3 class="cart-summary__title">Delivery</h3>
-        <div class="cart-summary__delivery-options">
-            <button class="cart-summary__delivery-btn cart-summary__delivery-btn--active" id="fast-delivery">Fast
-            </button>
-            <button class="cart-summary__delivery-btn" id="express-delivery">Express</button>
-        </div>
-        <p class="cart-summary__delivery-date">Delivery date: June 24, 2022</p>
+<!--        <h3 class="cart-summary__title">Delivery</h3>-->
+<!--        <div class="cart-summary__delivery-options">-->
+<!--            <button class="cart-summary__delivery-btn cart-summary__delivery-btn&#45;&#45;active" id="fast-delivery">Fast-->
+<!--            </button>-->
+<!--            <button class="cart-summary__delivery-btn" id="express-delivery">Express</button>-->
+<!--        </div>-->
+<!--        <p class="cart-summary__delivery-date">Delivery date: June 24, 2022</p>-->
 
-        <div class="cart-summary__promo">
-            <input type="text" placeholder="Promocode" class="cart-summary__promo-input">
-            <button class="cart-summary__promo-apply">Apply</button>
-        </div>
-        <p class="cart-summary__promo-discount">20% off discount</p>
+<!--        <div class="cart-summary__promo">-->
+<!--            <input type="text" placeholder="Promocode" class="cart-summary__promo-input">-->
+<!--            <button class="cart-summary__promo-apply">Apply</button>-->
+<!--        </div>-->
+<!--        <p class="cart-summary__promo-discount">20% off discount</p>-->
 
         <div class="cart-summary__totals">
             <p class="cart-summary__subtotal">Subtotal: <span id="subtotal">0.00 VNĐ</span></p>
-            <p class="cart-summary__discount">Discount: <span></span></p>
-            <p class="cart-summary__delivery">Delivery: <span id="delivery-fee">0.00 VNĐ</span></p>
+<!--            <p class="cart-summary__discount">Discount: <span></span></p>-->
+<!--            <p class="cart-summary__delivery">Delivery: <span id="delivery-fee">0.00 VNĐ</span></p>-->
             <h4 class="cart-summary__total">Total: <span id="total">0.00 VNĐ</span></h4>
         </div>
 
@@ -127,42 +135,228 @@
 </div>
 <script src="/js/Cart.js"></script>
 <script src="/js/script.js"></script>
+<!--<script>-->
+<!--    // Khai báo cartItems bên ngoài DOMContentLoaded để có thể truy cập được trong toàn bộ script-->
+<!--    let cartItems;-->
+
+<!--    document.addEventListener("DOMContentLoaded", function () {-->
+<!--        cartItems = document.querySelectorAll(".cart-item");  // Lấy tất cả các phần tử giỏ hàng-->
+<!--        const subtotalElement = document.getElementById("subtotal");-->
+<!--        let subtotal = 0;  // Biến lưu tổng các sản phẩm được chọn-->
+<!--        // const fastDeliveryButton = document.getElementById("fast-delivery");-->
+<!--        // const expressDeliveryButton = document.getElementById("express-delivery");-->
+<!--        const checkoutButton = document.querySelector(".cart-summary__checkout");-->
+
+<!--        // Lắng nghe sự kiện click vào nút Fast Delivery-->
+<!--        fastDeliveryButton.addEventListener("click", function () {-->
+<!--            expressDeliveryButton.classList.remove("cart-summary__delivery-btn&#45;&#45;active");-->
+<!--            fastDeliveryButton.classList.add("cart-summary__delivery-btn&#45;&#45;active");-->
+<!--            document.getElementById("delivery-fee").textContent = "0.00 VNĐ";-->
+<!--            updateTotal();-->
+<!--        });-->
+
+<!--        // Lắng nghe sự kiện click vào nút Express Delivery-->
+<!--        expressDeliveryButton.addEventListener("click", function () {-->
+<!--            fastDeliveryButton.classList.remove("cart-summary__delivery-btn&#45;&#45;active");-->
+<!--            expressDeliveryButton.classList.add("cart-summary__delivery-btn&#45;&#45;active");-->
+<!--            document.getElementById("delivery-fee").textContent = "30000 VNĐ";-->
+<!--            updateTotal();-->
+<!--        });-->
+
+<!--        // Hàm tính tổng tiền của từng sản phẩm-->
+<!--        function updateItemTotal(totalPriceElement, pricePerItem, quantity) {-->
+<!--            const newTotal = pricePerItem * quantity;-->
+<!--            totalPriceElement.textContent = `${newTotal.toFixed(0)} VNĐ`;-->
+<!--            return newTotal;-->
+<!--        }-->
+
+<!--        // Hàm cập nhật lại Subtotal (Tổng tiền các sản phẩm đã chọn)-->
+<!--        function updateSubtotal() {-->
+<!--            subtotal = 0;-->
+<!--            cartItems.forEach(cartItem => {-->
+<!--                const checkbox = cartItem.querySelector(".cart-item__checkbox-input");-->
+<!--                const totalPriceElement = cartItem.querySelector(".cart-item__total-price");-->
+<!--                const pricePerItem = parseFloat(cartItem.querySelector(".cart-item__quantity-input").dataset.price);-->
+<!--                const quantity = parseInt(cartItem.querySelector(".cart-item__quantity-input").value);-->
+
+<!--                if (checkbox.checked) {-->
+<!--                    subtotal += updateItemTotal(totalPriceElement, pricePerItem, quantity);-->
+<!--                }-->
+<!--            });-->
+<!--            // Cập nhật subtotal vào giao diện-->
+<!--            subtotalElement.textContent = `${subtotal.toFixed(0)} VNĐ`;-->
+<!--            updateTotal();-->
+<!--        }-->
+
+<!--        // Lắng nghe sự kiện thay đổi số lượng-->
+<!--        cartItems.forEach(cartItem => {-->
+<!--            const decreaseButton = cartItem.querySelector(".cart-item__quantity-btn&#45;&#45;decrease");-->
+<!--            const increaseButton = cartItem.querySelector(".cart-item__quantity-btn&#45;&#45;increase");-->
+<!--            const quantityInput = cartItem.querySelector(".cart-item__quantity-input");-->
+<!--            const totalPriceElement = cartItem.querySelector(".cart-item__total-price");-->
+
+<!--            const pricePerItem = parseFloat(quantityInput.dataset.price);-->
+<!--            let currentQuantity = parseInt(quantityInput.value);-->
+
+<!--            decreaseButton.addEventListener("click", () => {-->
+<!--                if (currentQuantity > 1) {-->
+<!--                    currentQuantity&#45;&#45;;-->
+<!--                    quantityInput.value = currentQuantity;-->
+<!--                    updateItemTotal(totalPriceElement, pricePerItem, currentQuantity);-->
+<!--                }-->
+<!--                updateSubtotal();-->
+<!--            });-->
+
+<!--            increaseButton.addEventListener("click", () => {-->
+<!--                currentQuantity++;-->
+<!--                quantityInput.value = currentQuantity;-->
+<!--                updateItemTotal(totalPriceElement, pricePerItem, currentQuantity);-->
+<!--                updateSubtotal();-->
+<!--            });-->
+
+<!--            // Lắng nghe sự kiện chọn checkbox-->
+<!--            const checkbox = cartItem.querySelector(".cart-item__checkbox-input");-->
+<!--            checkbox.addEventListener("change", updateSubtotal);-->
+<!--        });-->
+
+<!--        // Cập nhật Subtotal khi trang được tải lần đầu-->
+<!--        updateSubtotal();-->
+
+<!--        // Hàm cập nhật Total (Tổng tiền cuối cùng)-->
+<!--        // Hàm cập nhật Total (Tổng tiền cuối cùng) — ĐÃ SỬA-->
+<!--        function updateTotal() {-->
+<!--            const subtotal = parseFloat(document.getElementById("subtotal").textContent.replace(' VNĐ', '').replace(/,/g, '')) || 0;-->
+<!--            const total = subtotal;-->
+<!--            document.getElementById("total").textContent = `${total.toFixed(0)} VNĐ`;-->
+<!--        }-->
+
+
+<!--    });-->
+
+<!--    // Lắng nghe sự kiện click vào nút Checkout-->
+<!--    document.getElementById("checkout-btn").addEventListener("click", function () {-->
+<!--        // Lấy tất cả các checkbox đã được chọn-->
+<!--        const selectedCheckboxes = document.querySelectorAll(".cart-item__checkbox-input:checked");-->
+
+<!--        // Nếu không có checkbox nào được chọn-->
+<!--        if (selectedCheckboxes.length === 0) {-->
+<!--            alert("Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!");-->
+<!--            return;-->
+<!--        }-->
+
+<!--        // Kiểm tra số lượng sản phẩm-->
+<!--        let isQuantityValid = true;-->
+<!--        selectedCheckboxes.forEach(checkbox => {-->
+<!--            const cartItem = checkbox.closest(".cart-item");-->
+<!--            const quantity = parseInt(cartItem.querySelector(".cart-item__quantity-input").value);-->
+<!--            const availableStock = parseInt(cartItem.querySelector(".cart-item__stock").getAttribute("data-stock-quantity"));-->
+<!--            console.log('Quantity: ', quantity);-->
+<!--            console.log('Available stock: ', availableStock);-->
+
+<!--            if (quantity > availableStock) {-->
+<!--                isQuantityValid = false;-->
+<!--                // Hiển thị modal thông báo-->
+<!--                const quantityAlertModal = new bootstrap.Modal(document.getElementById('quantityAlertModal'));-->
+<!--                const quantityAlertMessage = document.getElementById('quantityAlertMessage');-->
+<!--                quantityAlertMessage.textContent = `Số lượng sản phẩm "${cartItem.querySelector(".cart-item__name").textContent}" vượt quá số lượng có sẵn trong kho.`;-->
+<!--                console.log('Showing modal');-->
+<!--                quantityAlertModal.show();  // Đảm bảo modal được hiển thị đúng-->
+<!--            }-->
+<!--        });-->
+
+<!--        if (!isQuantityValid) {-->
+<!--            return; // Dừng lại nếu có sản phẩm vượt quá số lượng-->
+<!--        }-->
+
+<!--        // Chuẩn bị danh sách sản phẩm để gửi-->
+<!--        const selectedProducts = Array.from(selectedCheckboxes).map(checkbox => {-->
+<!--            const cartItem = checkbox.closest(".cart-item");-->
+<!--            const quantity = cartItem.querySelector(".cart-item__quantity-input").value;-->
+<!--            const subToTal = document.getElementById("subtotal").textContent;-->
+<!--            const total = document.getElementById("total").textContent;-->
+<!--            return {-->
+<!--                id: checkbox.value,-->
+<!--                quantity: parseInt(quantity),-->
+<!--                subToTal: parseInt(subToTal.replace(/,/g, '').replace(' VNĐ', '')) || 0,-->
+<!--                total: parseInt(total.replace(/,/g, '').replace(' VNĐ', '')) || 0-->
+<!--            };-->
+<!--        });-->
+
+
+<!--        // Gửi dữ liệu đến Spring Boot-->
+<!--        const url = "/checkout"; // Thay URL theo controller của bạn-->
+<!--        const queryParams = new URLSearchParams();-->
+
+<!--        selectedProducts.forEach(product => {-->
+<!--            queryParams.append("id", product.id);-->
+<!--            queryParams.append("quantity", product.quantity);-->
+<!--            queryParams.append("delivery", product.delivery);-->
+<!--            queryParams.append("subToTal", product.subToTal);-->
+<!--            queryParams.append("total", product.total);-->
+<!--        });-->
+<!--        console.log(`${url}?${queryParams.toString()}`)-->
+<!--        window.location.href = `${url}?${queryParams.toString()}`;-->
+<!--    });-->
+
+<!--    document.addEventListener('DOMContentLoaded', () => {-->
+<!--        let deleteCartItemId = null; // ID của sản phẩm cần xóa-->
+<!--        let cartId = null;          // ID của giỏ hàng chứa sản phẩm-->
+
+<!--        // Khi nhấn nút Delete-->
+<!--        document.querySelectorAll('.cart-item__delete').forEach((deleteButton) => {-->
+<!--            deleteButton.addEventListener('click', function () {-->
+<!--                // Lấy giá trị cartId và productDetailId từ thẻ cha chứa-->
+<!--                const cartItemElement = this.closest('.cart-item');-->
+<!--                deleteCartItemId = cartItemElement.getAttribute('data-product-id');-->
+<!--                cartId = cartItemElement.getAttribute('data-cart-id');-->
+
+<!--                // Hiển thị modal xác nhận xóa-->
+<!--                const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));-->
+<!--                deleteModal.show();-->
+
+<!--            });-->
+
+<!--        });-->
+
+<!--        // Khi xác nhận xóa-->
+<!--        document.getElementById('confirmDelete').addEventListener('click', function () {-->
+<!--            if (deleteCartItemId && cartId) {-->
+<!--                console.log(deleteCartItemId)-->
+<!--                console.log(cartId)-->
+<!--                // Gửi request xóa đến server-->
+<!--                fetch(`/customer/cart/delete/${cartId}/${deleteCartItemId}`, {-->
+<!--                    method: 'DELETE',-->
+<!--                })-->
+<!--                    .then(response => {-->
+<!--                        window.location.href = '/customer/cart/show';-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error("Error:", error);-->
+<!--                        alert("Đã xảy ra lỗi khi xóa sản phẩm!");-->
+<!--                    });-->
+<!--            } else {-->
+<!--                alert("Không tìm thấy thông tin sản phẩm hoặc giỏ hàng!");-->
+<!--            }-->
+<!--        });-->
+
+<!--    });-->
+
+<!--</script>-->
 <script>
-    // Khai báo cartItems bên ngoài DOMContentLoaded để có thể truy cập được trong toàn bộ script
     let cartItems;
 
     document.addEventListener("DOMContentLoaded", function () {
-        cartItems = document.querySelectorAll(".cart-item");  // Lấy tất cả các phần tử giỏ hàng
+        cartItems = document.querySelectorAll(".cart-item");
         const subtotalElement = document.getElementById("subtotal");
-        let subtotal = 0;  // Biến lưu tổng các sản phẩm được chọn
-        const fastDeliveryButton = document.getElementById("fast-delivery");
-        const expressDeliveryButton = document.getElementById("express-delivery");
         const checkoutButton = document.querySelector(".cart-summary__checkout");
+        let subtotal = 0;
 
-        // Lắng nghe sự kiện click vào nút Fast Delivery
-        fastDeliveryButton.addEventListener("click", function () {
-            expressDeliveryButton.classList.remove("cart-summary__delivery-btn--active");
-            fastDeliveryButton.classList.add("cart-summary__delivery-btn--active");
-            document.getElementById("delivery-fee").textContent = "0.00 VNĐ";
-            updateTotal();
-        });
-
-        // Lắng nghe sự kiện click vào nút Express Delivery
-        expressDeliveryButton.addEventListener("click", function () {
-            fastDeliveryButton.classList.remove("cart-summary__delivery-btn--active");
-            expressDeliveryButton.classList.add("cart-summary__delivery-btn--active");
-            document.getElementById("delivery-fee").textContent = "30000 VNĐ";
-            updateTotal();
-        });
-
-        // Hàm tính tổng tiền của từng sản phẩm
         function updateItemTotal(totalPriceElement, pricePerItem, quantity) {
             const newTotal = pricePerItem * quantity;
             totalPriceElement.textContent = `${newTotal.toFixed(0)} VNĐ`;
             return newTotal;
         }
 
-        // Hàm cập nhật lại Subtotal (Tổng tiền các sản phẩm đã chọn)
         function updateSubtotal() {
             subtotal = 0;
             cartItems.forEach(cartItem => {
@@ -175,12 +369,16 @@
                     subtotal += updateItemTotal(totalPriceElement, pricePerItem, quantity);
                 }
             });
-            // Cập nhật subtotal vào giao diện
             subtotalElement.textContent = `${subtotal.toFixed(0)} VNĐ`;
             updateTotal();
         }
 
-        // Lắng nghe sự kiện thay đổi số lượng
+        function updateTotal() {
+            const subtotalValue = parseFloat(subtotalElement.textContent.replace(' VNĐ', '').replace(/,/g, '')) || 0;
+            const total = subtotalValue;
+            document.getElementById("total").textContent = `${total.toFixed(0)} VNĐ`;
+        }
+
         cartItems.forEach(cartItem => {
             const decreaseButton = cartItem.querySelector(".cart-item__quantity-btn--decrease");
             const increaseButton = cartItem.querySelector(".cart-item__quantity-btn--increase");
@@ -195,8 +393,8 @@
                     currentQuantity--;
                     quantityInput.value = currentQuantity;
                     updateItemTotal(totalPriceElement, pricePerItem, currentQuantity);
+                    updateSubtotal();
                 }
-                updateSubtotal();
             });
 
             increaseButton.addEventListener("click", () => {
@@ -206,118 +404,82 @@
                 updateSubtotal();
             });
 
-            // Lắng nghe sự kiện chọn checkbox
             const checkbox = cartItem.querySelector(".cart-item__checkbox-input");
             checkbox.addEventListener("change", updateSubtotal);
         });
 
-        // Cập nhật Subtotal khi trang được tải lần đầu
         updateSubtotal();
 
-        // Hàm cập nhật Total (Tổng tiền cuối cùng)
-        function updateTotal() {
-            const subtotal = parseFloat(document.getElementById("subtotal").textContent) || 0;
-            const deliveryFee = parseFloat(document.getElementById("delivery-fee").textContent) || 0;
-            const total = subtotal + deliveryFee;
-            document.getElementById("total").textContent = `${total.toFixed(0)} VNĐ`;
-        }
+        checkoutButton.addEventListener("click", function () {
+            const selectedCheckboxes = document.querySelectorAll(".cart-item__checkbox-input:checked");
 
-    });
-
-    // Lắng nghe sự kiện click vào nút Checkout
-    document.getElementById("checkout-btn").addEventListener("click", function () {
-        // Lấy tất cả các checkbox đã được chọn
-        const selectedCheckboxes = document.querySelectorAll(".cart-item__checkbox-input:checked");
-
-        // Nếu không có checkbox nào được chọn
-        if (selectedCheckboxes.length === 0) {
-            alert("Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!");
-            return;
-        }
-
-        // Kiểm tra số lượng sản phẩm
-        let isQuantityValid = true;
-        selectedCheckboxes.forEach(checkbox => {
-            const cartItem = checkbox.closest(".cart-item");
-            const quantity = parseInt(cartItem.querySelector(".cart-item__quantity-input").value);
-            const availableStock = parseInt(cartItem.querySelector(".cart-item__stock").getAttribute("data-stock-quantity"));
-            console.log('Quantity: ', quantity);
-            console.log('Available stock: ', availableStock);
-
-            if (quantity > availableStock) {
-                isQuantityValid = false;
-                // Hiển thị modal thông báo
-                const quantityAlertModal = new bootstrap.Modal(document.getElementById('quantityAlertModal'));
-                const quantityAlertMessage = document.getElementById('quantityAlertMessage');
-                quantityAlertMessage.textContent = `Số lượng sản phẩm "${cartItem.querySelector(".cart-item__name").textContent}" vượt quá số lượng có sẵn trong kho.`;
-                console.log('Showing modal');
-                quantityAlertModal.show();  // Đảm bảo modal được hiển thị đúng
+            if (selectedCheckboxes.length === 0) {
+                alert("Vui lòng chọn sản phẩm trước khi thanh toán!");
+                return;
             }
+
+            let isQuantityValid = true;
+            selectedCheckboxes.forEach(checkbox => {
+                const cartItem = checkbox.closest(".cart-item");
+                const quantity = parseInt(cartItem.querySelector(".cart-item__quantity-input").value);
+                const availableStock = parseInt(cartItem.querySelector(".cart-item__stock").getAttribute("data-stock-quantity"));
+
+                if (quantity > availableStock) {
+                    isQuantityValid = false;
+                    const quantityAlertModal = new bootstrap.Modal(document.getElementById('quantityAlertModal'));
+                    const quantityAlertMessage = document.getElementById('quantityAlertMessage');
+                    quantityAlertMessage.textContent = `Số lượng sản phẩm "${cartItem.querySelector(".cart-item__name").textContent}" vượt quá số lượng có sẵn trong kho.`;
+                    quantityAlertModal.show();
+                }
+            });
+
+            if (!isQuantityValid) {
+                return;
+            }
+
+            const selectedProducts = Array.from(selectedCheckboxes).map(checkbox => {
+                const cartItem = checkbox.closest(".cart-item");
+                const quantity = cartItem.querySelector(".cart-item__quantity-input").value;
+                const subTotal = document.getElementById("subtotal").textContent;
+                const total = document.getElementById("total").textContent;
+                return {
+                    id: checkbox.value,
+                    quantity: parseInt(quantity),
+                    subTotal: parseInt(subTotal.replace(/,/g, '').replace(' VNĐ', '')) || 0,
+                    total: parseInt(total.replace(/,/g, '').replace(' VNĐ', '')) || 0
+                };
+            });
+
+            const url = "/checkout";
+            const queryParams = new URLSearchParams();
+
+            selectedProducts.forEach(product => {
+                queryParams.append("id", product.id);
+                queryParams.append("quantity", product.quantity);
+                queryParams.append("subToTal", product.subTotal);
+                queryParams.append("total", product.total);
+            });
+
+            console.log(`${url}?${queryParams.toString()}`);
+            window.location.href = `${url}?${queryParams.toString()}`;
         });
 
-        if (!isQuantityValid) {
-            return; // Dừng lại nếu có sản phẩm vượt quá số lượng
-        }
+        let deleteCartItemId = null;
+        let cartId = null;
 
-        // Chuẩn bị danh sách sản phẩm để gửi
-        const selectedProducts = Array.from(selectedCheckboxes).map(checkbox => {
-            const cartItem = checkbox.closest(".cart-item");
-            const quantity = cartItem.querySelector(".cart-item__quantity-input").value;
-            const delivery = document.getElementById("delivery-fee").textContent
-            const subToTal = document.getElementById("subtotal").textContent
-            const total = document.getElementById("total").textContent
-            return {
-                id: checkbox.value,
-                quantity: parseInt(quantity),
-                delivery: parseInt(delivery.replace(/,/g, '').replace(' VNĐ', '')) || 0,
-                subToTal: parseInt(subToTal.replace(/,/g, '').replace(' VNĐ', '')) || 0,
-                total: parseInt(total.replace(/,/g, '').replace(' VNĐ', '')) || 0
-
-            };
-
-        });
-
-        // Gửi dữ liệu đến Spring Boot
-        const url = "/checkout"; // Thay URL theo controller của bạn
-        const queryParams = new URLSearchParams();
-
-        selectedProducts.forEach(product => {
-            queryParams.append("id", product.id);
-            queryParams.append("quantity", product.quantity);
-            queryParams.append("delivery", product.delivery);
-            queryParams.append("subToTal", product.subToTal);
-            queryParams.append("total", product.total);
-        });
-        console.log(`${url}?${queryParams.toString()}`)
-        window.location.href = `${url}?${queryParams.toString()}`;
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        let deleteCartItemId = null; // ID của sản phẩm cần xóa
-        let cartId = null;          // ID của giỏ hàng chứa sản phẩm
-
-        // Khi nhấn nút Delete
-        document.querySelectorAll('.cart-item__delete').forEach((deleteButton) => {
+        document.querySelectorAll('.cart-item__delete').forEach(deleteButton => {
             deleteButton.addEventListener('click', function () {
-                // Lấy giá trị cartId và productDetailId từ thẻ cha chứa
                 const cartItemElement = this.closest('.cart-item');
                 deleteCartItemId = cartItemElement.getAttribute('data-product-id');
                 cartId = cartItemElement.getAttribute('data-cart-id');
 
-                // Hiển thị modal xác nhận xóa
                 const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
                 deleteModal.show();
-
             });
-
         });
 
-        // Khi xác nhận xóa
         document.getElementById('confirmDelete').addEventListener('click', function () {
             if (deleteCartItemId && cartId) {
-                console.log(deleteCartItemId)
-                console.log(cartId)
-                // Gửi request xóa đến server
                 fetch(`/customer/cart/delete/${cartId}/${deleteCartItemId}`, {
                     method: 'DELETE',
                 })
@@ -334,8 +496,8 @@
         });
 
     });
-
 </script>
+
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Tải jQuery (nếu chưa có) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>

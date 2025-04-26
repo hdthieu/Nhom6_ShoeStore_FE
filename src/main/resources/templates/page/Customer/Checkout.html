@@ -69,9 +69,14 @@
         <h4 class="checkout-summary__title">Order Summary</h4>
 
         <div th:each="product : ${ProductDetailCheckoutDTO}" class="checkout-summary__item">
-<!--            <img th:src="@{'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}}"-->
-<!--                 alt="Product Image"-->
-<!--                 class="checkout-summary__image">-->
+            <img th:if="${product.image != null and #lists.size(product.image) > 0}"
+                 th:src="@{'http://localhost:8765/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}}"
+                 alt="Ảnh sản phẩm"
+                 width="200"
+                 height="200"
+                 style="object-fit: cover;" />
+
+
             <!--            <span th:text="'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}"></span>-->
             <div class="checkout-summary__details">
                 <p th:text="${product.name}" class="checkout-summary__product-name"></p>

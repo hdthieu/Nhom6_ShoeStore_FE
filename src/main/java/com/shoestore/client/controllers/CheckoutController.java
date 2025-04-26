@@ -34,7 +34,7 @@ public class CheckoutController {
     @GetMapping("/checkout")
     public String showFormCheckoutFromCart(@RequestParam("id") List<Integer> productDetailId,
                                            @RequestParam("quantity") List<Integer> quantities,
-                                           @RequestParam("delivery") int delivery,
+//                                           @RequestParam("delivery") int delivery,
                                            @RequestParam("subToTal") int subTotal,
                                            @RequestParam("total") int total,
                                            Model model) {
@@ -61,7 +61,7 @@ public class CheckoutController {
         model.addAttribute("address", addressDTOS);
         model.addAttribute("ProductDetailCheckoutDTO", productDetailCheckoutDTOS);
         model.addAttribute("subTotal", formatter.format(subTotal) + " VNĐ");
-        model.addAttribute("delivery", delivery == 0 ? "FREE" : formatter.format(delivery) + " VNĐ");
+//        model.addAttribute("delivery", delivery == 0 ? "FREE" : formatter.format(delivery) + " VNĐ");
         model.addAttribute("total", formatter.format(total));
         return "page/Customer/Checkout";
     }
