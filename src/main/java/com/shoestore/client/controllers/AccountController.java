@@ -4,18 +4,17 @@ import com.shoestore.client.dto.request.AddressDTO;
 import com.shoestore.client.dto.request.OrderDTO;
 import com.shoestore.client.dto.request.UserDTO;
 import com.shoestore.client.service.AddressService;
+import com.shoestore.client.service.OrderDetailService;
 import com.shoestore.client.service.OrderService;
 import com.shoestore.client.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping
@@ -27,7 +26,7 @@ public class AccountController {
   @Autowired private UserService userService;
   @Autowired private OrderService orderService;
   @Autowired private AddressService addressService;
-
+  @Autowired private OrderDetailService orderDetailService;
   @GetMapping("/customer/account")
   public String showAccount(Model model) {
     UserDTO user = (UserDTO) session.getAttribute("user");
@@ -48,19 +47,11 @@ public class AccountController {
 
     List<OrderDTO> allOrders = orderService.getOrdersByUserId(user.getUserID());
 
-    List<OrderDTO> processingOrders = allOrders.stream()
-            .filter(order -> order.getStatus().equalsIgnoreCase("Processing"))
-            .toList();
-
-    List<OrderDTO> deliveredOrders = allOrders.stream()
-            .filter(order -> order.getStatus().equalsIgnoreCase("Delivered"))
-            .toList();
-
-    model.addAttribute("processingOrders", processingOrders);
-    model.addAttribute("deliverdOrders", deliveredOrders);
-
+    model.addAttribute("allOrders", allOrders); // ✅ Đẩy hết tất cả đơn ra
+    System.out.println("allOrders " + allOrders);
     return "page/Customer/MyOrders";
   }
+
 
   @GetMapping("/customer/account/my-account")
   public String showMyAccount(Model model) {
@@ -101,5 +92,25 @@ public class AccountController {
 
     return "redirect:/customer/account";
   }
+  @GetMapping("/customer/account/view/{orderID}")
+  public String viewOrderDetail(@PathVariable int orderID, Model model) {
+    System.out.println("Viewing order ID: " + orderID);
+
+    // Fetch order details
+    Map<String, Object> orderDetail = orderDetailService.fetchOrderDetailByOrderID(orderID);
+
+    // Log kết quả
+    if (orderDetail == null || orderDetail.isEmpty()) {
+      System.out.println("No details found for order ID: " + orderID);
+      model.addAttribute("error", "Order details not found.");
+      return "error-page"; // Trả về trang lỗi
+    }
+
+    System.out.println("Order detail: " + orderDetail);
+    model.addAttribute("orderDetail", orderDetail);
+    return "page/Customer/OrderDetail";
+  }
+
+
 }
 

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Detail</title>
+  <link th:href="@{/css/OrderDetail.css}" rel="stylesheet" />
+</head>
+<body>
+<!-- Header -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="order-detail-container">
+  <h2>Order Detail - Order #<span th:text="${orderDetail.order.orderID}">#123456</span></h2>
+
+  <p>Order Date: <span th:text="${orderDetail.order.dateCreated}">01-01-2025</span></p>
+  <p>Status: <span th:text="${orderDetail.order.status}">Processing</span></p>
+  <p>Total Price: <span th:text="${orderDetail.order.totalPrice}">0.00 VNĐ</span></p>
+
+  <h3>Products:</h3>
+  <div th:each="item : ${orderDetail.items}">
+    <p>
+      <strong th:text="${item.productName}">Product Name</strong> -
+      Quantity: <span th:text="${item.quantity}">1</span> -
+      Price: <span th:text="${item.price}">0.00 VNĐ</span>
+    </p>
+  </div>
+
+  <a href="/customer/account/my-orders" class="btn btn-primary">Back to My Orders</a>
+</div>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

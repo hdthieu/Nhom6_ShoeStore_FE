@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/customer-checkout")
 public class CheckoutController {
     @Autowired private ProductDetailService productDetailService;
     @Autowired private ProductService productService;
