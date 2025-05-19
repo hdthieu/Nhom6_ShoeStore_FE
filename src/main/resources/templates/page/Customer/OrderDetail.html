@@ -7,28 +7,58 @@
 </head>
 <body>
 <!-- Header -->
-<div th:replace="fragments/header :: header"></div>
+<!--<div th:replace="fragments/header :: header"></div>-->
 
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Detail</title>
+  <link th:href="@{/css/OrderDetail.css}" rel="stylesheet" />
+</head>
+<body>
 <div class="order-detail-container">
-  <h2>Order Detail - Order #<span th:text="${orderDetail.order.orderID}">#123456</span></h2>
+  <h2>Order Detail - Order #<span th:text="${orderDetail['orderID']}">#123456</span></h2>
 
-  <p>Order Date: <span th:text="${orderDetail.order.dateCreated}">01-01-2025</span></p>
-  <p>Status: <span th:text="${orderDetail.order.status}">Processing</span></p>
-  <p>Total Price: <span th:text="${orderDetail.order.totalPrice}">0.00 VNĐ</span></p>
+  <p>Order Date: <span th:text="${orderDetail['orderDate']}">01-01-2025</span></p>
+  <p>Status: <span th:text="${orderDetail['status']}">Processing</span></p>
+  <p>Total Amount: <span th:text="${orderDetail['totalAmount']}">0.00 VNĐ</span></p>
+  <p>Fee Ship: <span th:text="${orderDetail['feeShip']}">0.00 VNĐ</span></p>
+  <p>Shipping Address: <span th:text="${orderDetail['shippingAddress']}">123 Example Street</span></p>
+
+  <h3>Customer Information:</h3>
+  <p>Name: <span th:text="${orderDetail['user']['name']}">John Doe</span></p>
+  <p>Phone Number: <span th:text="${orderDetail['user']['phoneNumber']}">000-000-0000</span></p>
+  <p>Email: <span th:text="${orderDetail['user']['email']}">example@example.com</span></p>
 
   <h3>Products:</h3>
-  <div th:each="item : ${orderDetail.items}">
-    <p>
-      <strong th:text="${item.productName}">Product Name</strong> -
-      Quantity: <span th:text="${item.quantity}">1</span> -
-      Price: <span th:text="${item.price}">0.00 VNĐ</span>
-    </p>
+  <div th:each="item : ${orderDetail['orderDetails']}">
+    <div class="product-item">
+<!--      <img th:src="@{/images/}" th:alt="${item['productName']}" th:src="@{'/images/' + ${item['imgUrl']}}" />-->
+      <p>
+        <strong th:text="${item['productName']}">Product Name</strong><br/>
+        Quantity: <span th:text="${item['quantity']}">1</span><br/>
+        Color: <span th:text="${item['color']}">Color</span><br/>
+        Size: <span th:text="${item['size']}">Size</span><br/>
+        Price: <span th:text="${item['price']}">0.00 VNĐ</span>
+      </p>
+    </div>
   </div>
+
+  <h3>Voucher:</h3>
+  <p>
+    Discount Type: <span th:text="${orderDetail['voucher']['discountType']}">None</span><br/>
+    Discount Value: <span th:text="${orderDetail['voucher']['discountValue']}">0</span>
+  </p>
 
   <a href="/customer/account/my-orders" class="btn btn-primary">Back to My Orders</a>
 </div>
+</body>
+</html>
+
+
 
 <!-- Footer -->
-<div th:replace="fragments/footer :: footer"></div>
+<!--<div th:replace="fragments/footer :: footer"></div>-->
 </body>
 </html>

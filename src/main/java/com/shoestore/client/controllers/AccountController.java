@@ -1,7 +1,8 @@
 package com.shoestore.client.controllers;
 
+import com.shoestore.client.client.OrderClient;
 import com.shoestore.client.dto.request.AddressDTO;
-import com.shoestore.client.dto.request.OrderDTO;
+import com.shoestore.client.dto.response.OrderResponseDTO;
 import com.shoestore.client.dto.request.UserDTO;
 import com.shoestore.client.service.AddressService;
 import com.shoestore.client.service.OrderDetailService;
@@ -22,7 +23,8 @@ public class AccountController {
 
   @Autowired
   private HttpSession session;
-
+  @Autowired
+  private OrderClient orderClient;
   @Autowired private UserService userService;
   @Autowired private OrderService orderService;
   @Autowired private AddressService addressService;
@@ -43,12 +45,21 @@ public class AccountController {
   @GetMapping("/customer/account/my-orders")
   public String showMyOrders(Model model) {
     UserDTO user = (UserDTO) session.getAttribute("user");
-    if (user == null) return "redirect:/login";
+    if (user == null) {
+      return "redirect:/login";
+    }
 
-    List<OrderDTO> allOrders = orderService.getOrdersByUserId(user.getUserID());
+    try {
+      // Gọi `OrderClient` để lấy danh sách đơn hàng
+      List<OrderResponseDTO> allOrders = orderClient.getOrdersByUserId(user.getUserID());
+      model.addAttribute("allOrders", allOrders); // Đẩy dữ liệu lên view
+      System.out.println("allOrders: nè " + allOrders);
+    } catch (Exception e) {
+      // Log lỗi nếu xảy ra
+      System.err.println("Error fetching orders: " + e.getMessage());
+      model.addAttribute("error", "Unable to fetch orders at this time. Please try again later.");
+    }
 
-    model.addAttribute("allOrders", allOrders); // ✅ Đẩy hết tất cả đơn ra
-    System.out.println("allOrders " + allOrders);
     return "page/Customer/MyOrders";
   }
 
@@ -110,7 +121,5 @@ public class AccountController {
     model.addAttribute("orderDetail", orderDetail);
     return "page/Customer/OrderDetail";
   }
-
-
 }
 

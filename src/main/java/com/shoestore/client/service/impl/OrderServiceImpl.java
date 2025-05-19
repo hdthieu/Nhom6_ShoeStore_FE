@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+import com.shoestore.client.dto.response.OrderResponseDTO;
 import java.util.*;
 
 @Service
@@ -97,20 +97,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getOrdersByUserId(int userId) {
+    public List<OrderResponseDTO> getOrdersByUserId(int userId) {
         String apiUrl = "http://localhost:8765/Order/user/" + userId; // API để lấy danh sách đơn hàng theo userId
 
         try {
-            ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(
+            ResponseEntity<List<OrderResponseDTO>> response = restTemplate.exchange(
                     apiUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<List<OrderDTO>>() {}
+                    new ParameterizedTypeReference<List<OrderResponseDTO>>() {}
             );
 
-            // Kiểm tra phản hồi
             if (response.getStatusCode() == HttpStatus.OK) {
-                return response.getBody(); // Trả về danh sách đơn hàng
+                return response.getBody();
             } else {
                 throw new RuntimeException("Failed to fetch orders: " + response.getStatusCode());
             }
@@ -118,6 +117,7 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Error fetching orders: " + e.getMessage(), e);
         }
     }
+
     @Override
     public Page<OrderDTO> findByStatus(String status, Pageable pageable) {
         String url = "http://localhost:8765/Order/searchStatus?status=" + status +

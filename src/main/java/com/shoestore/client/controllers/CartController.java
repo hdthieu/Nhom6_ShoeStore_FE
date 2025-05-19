@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,27 +36,32 @@ public class CartController {
     private CartClient cartClient;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,###");
 
+    // Hiển thị giỏ hàng
     @GetMapping("/show")
     public String showCart(Model model) {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/login";
-        }
-
         UserDTO user = (UserDTO) session.getAttribute("user");
+
+        List<CartItemResponseDTO> cartItems;
+
         if (user == null) {
-            return "redirect:/login";
-        }
-
-        int userId = user.getUserID();
-
-        // Gọi cart-service để lấy giỏ hàng qua FeignClient
-        CartDTO cartDTO = cartClient.getCartByUserId(userId);
-        if (cartDTO == null || cartDTO.getCartItems() == null) {
-            model.addAttribute("cartItems", List.of()); // Trả về danh sách rỗng nếu không có gì
+            // Khách chưa đăng nhập -> lấy giỏ hàng từ session attribute "guestCart"
+            cartItems = (List<CartItemResponseDTO>) session.getAttribute("guestCart");
+            if (cartItems == null) {
+                cartItems = new ArrayList<>(); // giỏ hàng rỗng cho guest
+            }
+            model.addAttribute("cartItems", cartItems);
             return "page/Customer/Cart";
         }
 
-        List<CartItemResponseDTO> cartItems = cartDTO.getCartItems();
+        // Nếu có user đăng nhập, lấy giỏ hàng từ cart-service qua FeignClient
+        int userId = user.getUserID();
+        CartDTO cartDTO = cartClient.getCartByUserId(userId);
+        if (cartDTO == null || cartDTO.getCartItems() == null) {
+            model.addAttribute("cartItems", Collections.emptyList());
+            return "page/Customer/Cart";
+        }
+
+        cartItems = cartDTO.getCartItems();
 
         // Bổ sung thông tin sản phẩm cho từng item
         cartItems.forEach(item -> {
@@ -63,16 +69,14 @@ public class CartController {
             ProductDetailDTO productDetailDTO = productDetailService.getProductDetailById(item.getId().getProductDetailId());
 
             item.setProductName(productDTO.getProductName());
-//            item.setProductImage(productDTO.getImageURL());
             item.setProductPrice(productDTO.getPrice());
             item.setColor(productDetailDTO.getColor());
             item.setSize(productDetailDTO.getSize());
             item.setProductId(productDTO.getProductID());
             item.setStockQuantity(productDetailDTO.getStockQuantity());
             if (productDTO.getImageURL() != null && !productDTO.getImageURL().isEmpty()) {
-                item.setProductImage(productDTO.getImageURL());  // ✅ Lấy đúng 1 ảnh đầu tiên
+                item.setProductImage(productDTO.getImageURL());
             }
-
         });
 
         model.addAttribute("cartItems", cartItems);

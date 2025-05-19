@@ -29,8 +29,8 @@ public class SpringSecurityConfig {
     System.out.println("Security Filter Chain");
     http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                    .requestMatchers("/customer/home", "/categories/**", "/checkout", "/").permitAll()
-                    .requestMatchers("/customer-checkout/**", "/cart/**","/customer/cart").hasRole("Customer")
+                    .requestMatchers("/customer/home", "/categories/**", "/checkout", "/","/customer/cart/**").permitAll()
+                    .requestMatchers("/customer-checkout/**").hasRole("Customer")
                     .requestMatchers("/admin/vouchers","/admin/users").hasRole("Admin")
                     .anyRequest().permitAll()
             )

@@ -22,17 +22,17 @@ public class OrderCustomerController {
     private OrderService orderService;
     @Autowired
     private OrderDetailService orderDetailService;
-    @GetMapping("/user/{userId}")
-    @ResponseBody
-    public List<OrderDTO> getOrdersByUser(@PathVariable Integer userId) {
-        return orderService.getOrdersByUserId(userId);
-    }
-    @GetMapping("/view/{orderID}")
-    public String viewOrderDetail(@PathVariable int orderID, Model model) {
-        Map<String, Object> orderDetail = orderDetailService.fetchOrderDetailByOrderID(orderID);
-        model.addAttribute("orderDetail", orderDetail);
-
-        return "page/Customer/OrderDetail";
-    }
+//    @GetMapping("/user/{userId}")
+////    @ResponseBody
+////    public List<OrderDTO> getOrdersByUser(@PathVariable Integer userId) {
+////        return orderService.getOrdersByUserId(userId);
+////    }
+//    @GetMapping("/view/{orderID}")
+//    public String viewOrderDetail(@PathVariable int orderID, Model model) {
+//        Map<String, Object> orderDetail = orderDetailService.fetchOrderDetailByOrderID(orderID);
+//        model.addAttribute("orderDetail", orderDetail);
+//
+//        return "page/Customer/OrderDetail";
+//    }
 }
 
