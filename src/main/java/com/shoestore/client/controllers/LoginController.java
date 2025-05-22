@@ -58,6 +58,8 @@ public class LoginController {
   @PostMapping("/register/auth")
   public String registerUser(@ModelAttribute UserDTO userDTO, Model model) {
     try {
+      userDTO.setStatus("Active");
+      userDTO.setUserName(userDTO.getName());
       userService.save(userDTO);
       return "redirect:/login";
     } catch (IllegalArgumentException e) {

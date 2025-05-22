@@ -39,4 +39,18 @@ public class AddressServiceImpl implements AddressService {
         System.out.println("Response Body: " + response.getBody());
         return response.getBody();
     }
+
+    @Override
+    public AddressDTO createAddress(int userId, AddressDTO addressDTO) {
+        String apiUrl = "http://localhost:8765/address/user/" + userId;
+
+        ResponseEntity<AddressDTO> response = restTemplate.postForEntity(
+                apiUrl,
+                addressDTO,
+                AddressDTO.class
+        );
+
+        return response.getBody();
+    }
+
 }

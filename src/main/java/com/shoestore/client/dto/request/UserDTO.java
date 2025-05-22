@@ -80,11 +80,11 @@ public class UserDTO {
     this.userID = userID;
   }
 
-  public String getCI() {
+  public String getCi() {
     return ci;
   }
 
-  public void setCI(String ci) {
+  public void setCi(String ci) {
     this.ci = ci;
   }
 
