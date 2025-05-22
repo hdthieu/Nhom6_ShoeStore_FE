@@ -2,14 +2,10 @@ package com.shoestore.client.dto.request;
 
 import com.shoestore.client.dto.response.CartItemResponseDTO;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 @NoArgsConstructor
-@Getter
-@Setter
 public class CartItemDTO {
     private IdDTO id;
     private int quantity;
@@ -21,9 +17,8 @@ public class CartItemDTO {
         this.id = id;
     }
 
-
-
     @Data
+    @NoArgsConstructor
     public static class IdDTO {
         private int cartId;
         private int productDetailId;
@@ -32,9 +27,23 @@ public class CartItemDTO {
             this.cartId = cartId;
             this.productDetailId = productDetailId;
         }
-
-        public IdDTO() {
-
-        }
     }
+    public CartItemResponseDTO toCartItemResponseDTO() {
+        CartItemResponseDTO responseDTO = new CartItemResponseDTO();
+
+        // Tạo và gán ID cho đối tượng Response
+        CartItemResponseDTO.IdDTO responseId = new CartItemResponseDTO.IdDTO(
+                this.id.getCartId(),
+                this.id.getProductDetailId()
+        );
+        responseDTO.setId(responseId);
+
+        // Sao chép các thuộc tính khác
+        responseDTO.setQuantity(this.quantity);
+        responseDTO.setSubTotal(this.subTotal);
+        responseDTO.setProductDetailDTO(this.productDetailDTO);
+
+        return responseDTO;
+    }
+
 }

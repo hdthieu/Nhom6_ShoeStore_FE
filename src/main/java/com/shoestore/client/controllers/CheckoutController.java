@@ -7,8 +7,10 @@ import com.shoestore.client.dto.request.*;
 import com.shoestore.client.dto.response.PaymentResponseDTO;
 import com.shoestore.client.dto.response.ProductDetailCheckoutDTO;
 import com.shoestore.client.service.*;
+import com.shoestore.client.service.impl.VoucherServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,10 +24,12 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/customer-checkout")
+@Slf4j
 public class CheckoutController {
     @Autowired private ProductDetailService productDetailService;
     @Autowired private ProductService productService;
     @Autowired private AddressService addressService;
+    @Autowired private VoucherService voucherService;
     @Autowired private OrderDetailService orderDetailService;
     @Autowired private ReceiptService receiptService;
     @Autowired private HttpSession session;
@@ -49,10 +53,7 @@ public class CheckoutController {
         List<ProductDetailCheckoutDTO> productDetailCheckoutDTOS = selectedProducts.entrySet().stream()
                 .map(entry -> {
                     ProductDetailDTO pd = productDetailService.getProductDetailById(entry.getKey());
-
-                    ProductDTO p = productService.getProductByProductDetail(entry.getKey());
-                    System.out.println(">> Giá đúng từ ProductDetailDTO: " + pd.getPrice());
-                    System.out.println(">> Giá sai từ ProductDTO (có thể là 0): " + p.getPrice());
+                    ProductDTO p = productClient.getProductById(entry.getKey());
                     return new ProductDetailCheckoutDTO(pd, entry.getValue(), p.getProductName(), p.getImageURL(), p.getPrice(), p.getProductID());
 
                 }).toList();
@@ -74,10 +75,11 @@ public class CheckoutController {
                                                     Model model) {
         UserDTO user = (UserDTO) session.getAttribute("user");
         if (user == null) return "redirect:/login";
+        System.out.println("👤 Session user: " + session.getAttribute("user"));
 
         List<AddressDTO> addressDTOS = addressService.getAddressByUserId(user.getUserID());
         ProductDetailDTO pd = productDetailService.getProductDetailById(productDetailId);
-        ProductDTO p = productService.getProductByProductDetail(productDetailId);
+        ProductDTO p = productClient.getProductById(productDetailId);
 
         ProductDetailCheckoutDTO dto = new ProductDetailCheckoutDTO(pd, quantity, p.getProductName(), p.getImageURL(), p.getPrice(), p.getProductID());
         List<ProductDetailCheckoutDTO> checkoutList = List.of(dto);
@@ -123,21 +125,33 @@ public class CheckoutController {
         // ✅ Gọi BE để lấy thông tin voucher và lấy voucherID
         if (voucherCode != null && !voucherCode.isEmpty()) {
             try {
+                System.out.println("⚙️ Class của productClient: " + productClient.getClass());
+
+                log.info("🔁 Bắt đầu gọi kiểm tra mã giảm giá với code: {}", voucherCode);
                 VoucherDTO voucher = productClient.checkVoucherByCode(voucherCode);
-                if (voucher != null && LocalDate.now().isBefore(voucher.getEndDate())
-                        && total >= voucher.getMinValueOrder()) {
-
-                    double discount = voucher.getDiscountType().equalsIgnoreCase("PERCENT")
-                            ? total * voucher.getDiscountValue() / 100
-                            : voucher.getDiscountValue();
-
-                    total -= (int) discount;
-                    voucherID = voucher.getVoucherID(); // ✅ Gán vào order
+                log.info("✅ Gọi API thành công, voucher: {}", voucher);
+                if (voucher == null || LocalDate.now().isAfter(voucher.getEndDate())) {
+                    throw new RuntimeException("Mã giảm giá đã hết hạn hoặc không tồn tại.");
                 }
+
+                if (total < voucher.getMinValueOrder()) {
+                    throw new RuntimeException("Đơn hàng không đủ điều kiện áp dụng mã giảm giá.");
+                }
+
+                double discount = voucher.getDiscountType().equalsIgnoreCase("PERCENT")
+                        ? total * voucher.getDiscountValue() / 100
+                        : voucher.getDiscountValue();
+
+                total -= (int) discount;
+                voucherID = voucher.getVoucherID();
+
             } catch (Exception e) {
-                System.out.println("❌ Voucher không hợp lệ hoặc đã hết hạn: " + voucherCode);
+                return ResponseEntity.status(400).body(Map.of(
+                        "error", "Không thể áp dụng mã giảm giá: " + e.getMessage()
+                ));
             }
         }
+
 
         AddressDTO address = addressService.getAddressById(addressId);
         String shippingAddress = formatAddress(address);
@@ -197,6 +211,47 @@ public class CheckoutController {
 
 
     }
+
+    @GetMapping("/voucher/check")
+    @ResponseBody
+    public ResponseEntity<?> checkVoucher(@RequestParam("code") String code) {
+        try {
+            VoucherDTO voucher = voucherService.checkVoucherByCode(code);
+            return ResponseEntity.ok(Map.of(
+                    "valid", true,
+                    "voucherID", voucher.getVoucherID(),
+                    "discount", voucher.getDiscountValue(),
+                    "type", voucher.getDiscountType(),
+                    "minValueOrder", voucher.getMinValueOrder()
+            ));
+        } catch (VoucherServiceImpl.InvalidVoucherException e) {
+            return ResponseEntity.ok(Map.of(
+                    "valid", false,
+                    "message", e.getMessage()
+            ));
+        } catch (VoucherServiceImpl.RateLimitException e) {
+            return ResponseEntity.status(429).body(Map.of(
+                    "valid", false,
+                    "message", e.getMessage()
+            ));
+        } catch (VoucherServiceImpl.RetryFailureException e) {
+            return ResponseEntity.status(503).body(Map.of(
+                    "valid", false,
+                    "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            log.error("❌ Lỗi không xác định khi kiểm tra voucher: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "valid", false,
+                    "message", "🚫 Lỗi không xác định."
+            ));
+        }
+    }
+
+
+
+
+
 
 
 }

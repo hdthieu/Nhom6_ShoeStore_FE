@@ -11,6 +11,8 @@ import com.shoestore.client.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -44,89 +46,39 @@ public class LoginController {
   @Autowired
   private ProductDetailService productDetailService;
 
+  @Autowired
+  private AuthenticationManager authenticationManager;
+
   @PostMapping("/login/auth")
   public String login(@ModelAttribute UserDTO userDTO, HttpServletRequest request) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null && authentication.isAuthenticated()) {
+    try {
+      UsernamePasswordAuthenticationToken token =
+              new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword());
+
+      Authentication authentication = authenticationManager.authenticate(token);
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+
+      // Đăng nhập thành công
       UserDTO user = userService.findByEmail(userDTO.getEmail());
+      session.setAttribute("user", user);
 
-      if (user != null) {
-        session.setAttribute("user", user);
 
-        // Lấy giỏ hàng guest từ session
-        List<CartItemResponseDTO> guestCart = (List<CartItemResponseDTO>) session.getAttribute("guestCart");
-        if (guestCart != null && !guestCart.isEmpty()) {
-          mergeCart(guestCart, user.getUserID());
-          session.removeAttribute("guestCart");
-        }
 
-        String roleName = user.getRole().getName();
-        if ("Admin".equals(roleName)) {
-          return "redirect:/admin/orders/Home";  // Admin
-        } else if ("Customer".equals(roleName)) {
-          return "redirect:/customer/home";  // Customer
-        }
-      }
-    }
-
-    return "redirect:/login?error";
-  }
-  private CartItemDTO.IdDTO convertToCartItemIdDTO(CartItemResponseDTO.IdDTO responseId) {
-    CartItemDTO.IdDTO dtoId = new CartItemDTO.IdDTO();
-    dtoId.setCartId(responseId.getCartId());
-    dtoId.setProductDetailId(responseId.getProductDetailId());
-    return dtoId;
-  }
-  private void mergeCart(List<CartItemResponseDTO> guestCart, int userId) {
-    // Lấy cart user hiện tại
-    CartDTO userCart = cartClient.getCartByUserId(userId);
-
-    if (userCart == null) {
-      userCart = cartClient.createCartForUser(userId);
-    }
-
-    List<CartItemDTO> itemsToUpdate = new ArrayList<>();
-    List<CartItemDTO> itemsToAdd = new ArrayList<>();
-
-    Map<Integer, CartItemResponseDTO> userCartMap = new HashMap<>();
-    if (userCart.getCartItems() != null) {
-      for (CartItemResponseDTO item : userCart.getCartItems()) {
-        userCartMap.put(item.getId().getProductDetailId(), item);
-      }
-    }
-
-    for (CartItemResponseDTO guestItem : guestCart) {
-      int pdId = guestItem.getId().getProductDetailId();
-      if (userCartMap.containsKey(pdId)) {
-        CartItemResponseDTO userItem = userCartMap.get(pdId);
-        userItem.setQuantity(userItem.getQuantity() + guestItem.getQuantity());
-
-        CartItemDTO updatedItem = new CartItemDTO();
-        updatedItem.setId(convertToCartItemIdDTO(userItem.getId())); // Sử dụng phương thức chuyển đổi
-        updatedItem.setQuantity(userItem.getQuantity());
-        itemsToUpdate.add(updatedItem);
+      // Điều hướng theo vai trò
+      String roleName = user.getRole().getName();
+      if ("Admin".equals(roleName)) {
+        return "redirect:/admin/orders/Home";
       } else {
-        CartItemDTO newItem = new CartItemDTO();
-        CartItemDTO.IdDTO idDTO = new CartItemDTO.IdDTO(userCart.getCartID(), pdId);
-        newItem.setId(idDTO);
-        newItem.setQuantity(guestItem.getQuantity());
-        newItem.setCart(userCart);
-        newItem.setProductDetailDTO(productDetailService.getProductDetailById(pdId));
-        itemsToAdd.add(newItem);
+        return "redirect:/customer/home";
       }
-    }
 
-
-    // Batch update và add
-    if (!itemsToUpdate.isEmpty()) {
-      cartClient.updateCartItemQuantity((CartItemResponseDTO) itemsToUpdate);
-    }
-    if (!itemsToAdd.isEmpty()) {
-      for (CartItemDTO item : itemsToAdd) {
-        cartClient.addCartItem(item);
-      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "redirect:/login?error=true";
     }
   }
+
+
 
 
 

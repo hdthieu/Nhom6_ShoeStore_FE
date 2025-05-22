@@ -43,7 +43,7 @@
                 <div class="size-options">
                     <div th:each="detail : ${productDetail}">
                         <button type="button" class="size-box"
-                                th:text="${detail.size.sizeValue}"
+                                th:text="${detail.size}"
                                 th:value="${detail.productDetailID}">
 
                         </button>
@@ -236,120 +236,10 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<!--<script>-->
-
-<!--    document.addEventListener("DOMContentLoaded", function () {-->
-<!--        // Lấy tất cả các nút size-->
-<!--        const sizeButtons = document.querySelectorAll('.size-box');-->
-<!--        const productDetailIDInput = document.getElementById('productDetailID');-->
-<!--        const decreaseBtn = document.getElementById("decrease");-->
-<!--        const increaseBtn = document.getElementById("increase");-->
-<!--        const quantityDisplay = document.getElementById("quantity-display");-->
-<!--        const quantityInput = document.getElementById("quantity-input");-->
-<!--        const subTotalInput = document.getElementById('subTotal');-->
-<!--        const productName = document.querySelector('.product-info h1').textContent;-->
-<!--        const addToCartButton = document.querySelector('.btn-add-to-cart');-->
-
-<!--        // Lắng nghe sự kiện click của các nút size-->
-<!--        sizeButtons.forEach(button => {-->
-<!--            button.addEventListener('click', function () {-->
-<!--                // Cập nhật giá trị productDetailID vào input ẩn-->
-<!--                productDetailIDInput.value = this.value;-->
-<!--                // Đổi màu nút đã chọn (thêm class active)-->
-<!--                sizeButtons.forEach(b => b.classList.remove('active'));-->
-<!--                this.classList.add('active');-->
-<!--            });-->
-<!--        });-->
-
-<!--        const updateQuantity = (value) => {-->
-<!--            if (value < 1) value = 1; // Không cho giá trị nhỏ hơn 1-->
-<!--            quantityDisplay.textContent = value; // Cập nhật giá trị trong <span>-->
-<!--            quantityInput.value = value; // Cập nhật giá trị trong <input>-->
-<!--        };-->
-
-<!--        // Xử lý khi bấm nút tăng-->
-<!--        increaseBtn.addEventListener("click", () => {-->
-<!--            const currentValue = parseInt(quantityInput.value, 10);-->
-<!--            updateQuantity(currentValue + 1);-->
-<!--        });-->
-
-<!--        // Xử lý khi bấm nút giảm-->
-<!--        decreaseBtn.addEventListener("click", () => {-->
-<!--            const currentValue = parseInt(quantityInput.value, 10);-->
-<!--            updateQuantity(currentValue - 1);-->
-<!--        });-->
-
-<!--        const saveToStorage = (key, data) => {-->
-<!--            try {-->
-<!--                localStorage.setItem(key, JSON.stringify(data));-->
-<!--            } catch (e) {-->
-<!--                console.error("Failed to save to storage:", e);-->
-<!--            }-->
-<!--        };-->
-
-<!--        const getFromStorage = (key) => {-->
-<!--            const data = localStorage.getItem(key);-->
-<!--            return data ? JSON.parse(data) : [];-->
-<!--        };-->
-<!--        // Đảm bảo form chỉ được gửi khi bấm vào nút "Add to Cart"-->
-<!--        // const addToCartButton = document.querySelector('.btn-add-to-cart');-->
-<!--        // addToCartButton.addEventListener('click', function (event) {-->
-<!--        //     if (!productDetailIDInput.value) {-->
-<!--        //         event.preventDefault(); // Prevent form submission-->
-<!--        //         alert("Please select a size before adding to cart.");-->
-<!--        //     } else {-->
-<!--        //         document.getElementById('productDetailForm').submit();-->
-<!--        //     }-->
-<!--        //-->
-<!--        // });-->
-<!--        addToCartButton.addEventListener('click', function (event) {-->
-<!--            event.preventDefault();-->
-<!--            if (!productDetailIDInput.value) {-->
-<!--                alert("Vui lòng chọn kích thước trước khi thêm vào giỏ hàng!");-->
-<!--                return;-->
-<!--            }-->
-<!--            const cartItem = {-->
-<!--                productDetailID: productDetailIDInput.value,-->
-<!--                productName: productName,-->
-<!--                price: productPrice,-->
-<!--                quantity: parseInt(quantityInput.value, 10),-->
-<!--            };-->
-<!--            const cart = getFromStorage('cart');-->
-<!--            const existingItemIndex = cart.findIndex(item => item.productDetailID === cartItem.productDetailID);-->
-<!--            if (existingItemIndex !== -1) {-->
-<!--                cart[existingItemIndex].quantity += cartItem.quantity;-->
-<!--            } else {-->
-<!--                cart.push(cartItem);-->
-<!--            }-->
-<!--            saveToStorage('cart', cart);-->
-<!--            alert("Đã thêm vào giỏ hàng thành công!");-->
-<!--            console.log('Cart:', cart);-->
-<!--        });-->
-<!--        const buttonBuyNow=document.querySelector('.btn-buy-now')-->
-<!--        buttonBuyNow.addEventListener('click',function (event) {-->
-<!--            const productDetailId=document.getElementById("productDetailID").value-->
-<!--            const price=document.getElementById("product-price").textContent-->
-<!--            const quantity=document.getElementById("quantity-input").value-->
-<!--            console.log(productDetailId)-->
-<!--            console.log(price)-->
-<!--            console.log(quantity)-->
-
-<!--            const url = "/checkoutFromProductDetail"; // Thay URL theo controller của bạn-->
-<!--            const queryParams = new URLSearchParams();-->
-<!--            queryParams.append("productDetailId", parseInt(productDetailId));-->
-<!--            queryParams.append("quantity", parseInt(quantity));-->
-<!--            queryParams.append("price", parseInt(price));-->
-<!--            if(productDetailId===""){-->
-<!--                alert("Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!");-->
-<!--                return;-->
-<!--            }-->
-<!--            console.log(`${url}?${queryParams.toString()}`)-->
-<!--            window.location.href = `${url}?${queryParams.toString()}`;-->
-<!--        })-->
-<!--    });-->
-<!--</script>-->
 <script>
+
     document.addEventListener("DOMContentLoaded", function () {
+        // Lấy tất cả các nút size
         const sizeButtons = document.querySelectorAll('.size-box');
         const productDetailIDInput = document.getElementById('productDetailID');
         const decreaseBtn = document.getElementById("decrease");
@@ -357,105 +247,71 @@
         const quantityDisplay = document.getElementById("quantity-display");
         const quantityInput = document.getElementById("quantity-input");
         const subTotalInput = document.getElementById('subTotal');
-        const productPrice = parseFloat(document.getElementById('product-price').textContent);
-        const productName = document.querySelector('.product-info h1').textContent;
-        const addToCartButton = document.querySelector('.btn-add-to-cart');
-        const buttonBuyNow = document.querySelector('.btn-buy-now');
-
+        const productPrice = document.getElementById('product-price').value;
+        // Lắng nghe sự kiện click của các nút size
         sizeButtons.forEach(button => {
             button.addEventListener('click', function () {
+                // Cập nhật giá trị productDetailID vào input ẩn
                 productDetailIDInput.value = this.value;
+                // Đổi màu nút đã chọn (thêm class active)
                 sizeButtons.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
             });
         });
 
         const updateQuantity = (value) => {
-            if (value < 1) value = 1;
-            quantityDisplay.textContent = value;
-            quantityInput.value = value;
+            if (value < 1) value = 1; // Không cho giá trị nhỏ hơn 1
+            quantityDisplay.textContent = value; // Cập nhật giá trị trong <span>
+            quantityInput.value = value; // Cập nhật giá trị trong <input>
         };
 
+        // Xử lý khi bấm nút tăng
         increaseBtn.addEventListener("click", () => {
-            updateQuantity(parseInt(quantityInput.value, 10) + 1);
+            const currentValue = parseInt(quantityInput.value, 10);
+            updateQuantity(currentValue + 1);
         });
 
+        // Xử lý khi bấm nút giảm
         decreaseBtn.addEventListener("click", () => {
-            updateQuantity(parseInt(quantityInput.value, 10) - 1);
+            const currentValue = parseInt(quantityInput.value, 10);
+            updateQuantity(currentValue - 1);
         });
 
-        const saveToStorage = (key, data) => {
-            try {
-                localStorage.setItem(key, JSON.stringify(data));
-            } catch (e) {
-                console.error("Failed to save to storage:", e);
-            }
-        };
-
-        const getFromStorage = (key) => {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : [];
-        };
-
+        // Đảm bảo form chỉ được gửi khi bấm vào nút "Add to Cart"
+        const addToCartButton = document.querySelector('.btn-add-to-cart');
         addToCartButton.addEventListener('click', function (event) {
-            event.preventDefault(); // Ngăn form submit
-
             if (!productDetailIDInput.value) {
-                toastr.warning("Please select a size before adding to cart.", "Warning");
-                return;
-            }
-
-            // Lấy thông tin sản phẩm
-            const cartItem = {
-                productDetailID: productDetailIDInput.value,
-                productName: productName,
-                price: parseFloat(productPrice), // Chuyển giá sang dạng số
-                quantity: parseInt(quantityInput.value, 10), // Chuyển số lượng sang dạng số
-            };
-
-            // Lấy giỏ hàng hiện tại từ localStorage
-            const cart = getFromStorage('cart');
-
-            // Kiểm tra sản phẩm đã tồn tại chưa
-            const existingItemIndex = cart.findIndex(item => item.productDetailID === cartItem.productDetailID);
-            if (existingItemIndex !== -1) {
-                // Nếu có, cập nhật số lượng
-                cart[existingItemIndex].quantity += cartItem.quantity;
+                event.preventDefault(); // Prevent form submission
+                alert("Please select a size before adding to cart.");
             } else {
-                // Nếu chưa có, thêm mới
-                cart.push(cartItem);
+                document.getElementById('productDetailForm').submit();
             }
 
-            // Lưu giỏ hàng trở lại localStorage
-            saveToStorage('cart', cart);
-
-            // Hiển thị thông báo thành công
-            toastr.success("Product added to cart successfully!", "Success");
-
-            console.log('Cart:', cart); // Debug: In giỏ hàng ra console
         });
+        const buttonBuyNow=document.querySelector('.btn-buy-now')
+        buttonBuyNow.addEventListener('click',function (event) {
+            const productDetailId=document.getElementById("productDetailID").value
+            const price=document.getElementById("product-price").textContent
+            const quantity=document.getElementById("quantity-input").value
+            console.log(productDetailId)
+            console.log(price)
+            console.log(quantity)
 
-
-        buttonBuyNow.addEventListener('click', function (event) {
-            const productDetailId = productDetailIDInput.value;
-            const quantity = parseInt(quantityInput.value, 10);
-            if (!productDetailId) {
-                alert("Vui lòng chọn kích thước trước khi mua ngay!");
+            const url = "/customer-checkout/checkoutFromProductDetail"; // Thay URL theo controller của bạn
+            const queryParams = new URLSearchParams();
+            queryParams.append("productDetailId", parseInt(productDetailId));
+            queryParams.append("quantity", parseInt(quantity));
+            queryParams.append("price", parseInt(price));
+            if(productDetailId===""){
+                alert("Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!");
                 return;
             }
-            const url = "/checkoutFromProductDetail";
-            const queryParams = new URLSearchParams({
-                productDetailId,
-                quantity,
-                price: productPrice,
-            });
+            console.log(`${url}?${queryParams.toString()}`)
             window.location.href = `${url}?${queryParams.toString()}`;
-        });
+        })
     });
-
 </script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 </body>
 
 </html>

@@ -22,4 +22,11 @@ public interface CartClient {
 
     @PostMapping("/cart/create")
     CartDTO createCartForUser(@RequestBody int userId);
-}
+
+
+        @PostMapping("/api/cart/save")
+        CartDTO saveCart(@RequestBody CartDTO cart);  // <== CHUYỂN TỪ void SANG CartDTO
+    }
+
+
+

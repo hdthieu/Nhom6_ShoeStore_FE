@@ -1,14 +1,18 @@
 package com.shoestore.client.client;
 
+import com.shoestore.client.dto.request.ProductDTO;
 import com.shoestore.client.dto.request.ProductDetailDTO;
 import com.shoestore.client.dto.request.VoucherDTO;
 import com.shoestore.client.dto.response.ProductSingleResponseDTO;
 
+import feign.Request;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -25,9 +29,13 @@ public interface ProductClient {
 
     // Lấy thông tin Product (gọi endpoint khác nếu cần chi tiết)
     @GetMapping("products/detailFor/{id}")
-    ProductSingleResponseDTO getProductById(@PathVariable("id") Integer id);
+    ProductDTO getProductById(@PathVariable("id") Integer id);
+
     @GetMapping("/products/voucher/check")
     VoucherDTO checkVoucherByCode(@RequestParam("code") String code);
+
+
+
 }
 
 

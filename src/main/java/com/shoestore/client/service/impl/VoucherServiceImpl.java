@@ -1,8 +1,15 @@
 package com.shoestore.client.service.impl;
 
+import com.shoestore.client.client.ProductClient;
 import com.shoestore.client.dto.request.VoucherDTO;
 import com.shoestore.client.dto.response.VoucherResponseDTO;
 import com.shoestore.client.service.VoucherService;
+import feign.FeignException;
+import feign.RetryableException;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -13,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -24,10 +32,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private RestTemplate restTemplate;
     private static final String SERVER_URL = "http://localhost:8765/products/voucher";
+    @Autowired
+    private ProductClient productClient;
     @Override
     public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate, String status) {
         StringBuilder urlBuilder = new StringBuilder(SERVER_URL + "/search?");
@@ -96,5 +107,73 @@ public class VoucherServiceImpl implements VoucherService {
         );
         return response.getBody();
     }
+
+
+
+
+
+
+
+    @Retry(name = "voucherRetry", fallbackMethod = "fallback")
+    @RateLimiter(name = "voucherRateLimiter", fallbackMethod = "fallback")
+    public VoucherDTO checkVoucherByCode(String code) {
+        log.info("🔁 Gọi API kiểm tra mã voucher: {}", code);
+        try {
+            return productClient.checkVoucherByCode(code);
+        } catch (FeignException e) {
+            if (e.status() == 404 || e.status() == 400) {
+                log.warn("❌ Mã [{}] không tồn tại hoặc không hợp lệ.", code);
+                throw new InvalidVoucherException("❌ Mã không hợp lệ hoặc đã hết hạn.");
+            }
+
+            throw e; // Cho phép fallback xử lý lỗi hệ thống
+        }
+    }
+
+
+    public VoucherDTO fallback(String code, Throwable t) {
+        log.error("⚠️ Fallback triggered for [{}]: {}", code, t.toString());
+
+        // 👉 Fallback bị gọi vì cấu hình sai, bắt lại lỗi gốc nếu là InvalidVoucherException
+        if (t.getCause() instanceof InvalidVoucherException) {
+            throw (InvalidVoucherException) t.getCause();
+        }
+
+        if (t instanceof InvalidVoucherException) {
+            throw (InvalidVoucherException) t;
+        }
+
+        if (t instanceof RateLimitException || t instanceof RequestNotPermitted) {
+            throw new RateLimitException("🚫 Bạn thao tác quá nhanh. Vui lòng thử lại sau.");
+        }
+
+        throw new RetryFailureException("⚠️ Không thể kết nối tới hệ thống. Vui lòng thử lại sau.");
+    }
+
+
+
+
+
+    // ===== Custom Exceptions =====
+    public static class InvalidVoucherException extends RuntimeException {
+        public InvalidVoucherException(String message) {
+            super(message);
+        }
+    }
+
+    public static class RetryFailureException extends RuntimeException {
+        public RetryFailureException(String message) {
+            super(message);
+        }
+    }
+
+    public static class RateLimitException extends RuntimeException {
+        public RateLimitException(String message) {
+            super(message);
+        }
+    }
+
+
+
 
 }

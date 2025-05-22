@@ -28,7 +28,8 @@ public class AccountController {
   @Autowired private UserService userService;
   @Autowired private OrderService orderService;
   @Autowired private AddressService addressService;
-  @Autowired private OrderDetailService orderDetailService;
+  @Autowired
+  private OrderDetailService orderDetailService;
   @GetMapping("/customer/account")
   public String showAccount(Model model) {
     UserDTO user = (UserDTO) session.getAttribute("user");
@@ -105,11 +106,9 @@ public class AccountController {
   }
   @GetMapping("/customer/account/view/{orderID}")
   public String viewOrderDetail(@PathVariable int orderID, Model model) {
-    System.out.println("Viewing order ID: " + orderID);
-
-    // Fetch order details
     Map<String, Object> orderDetail = orderDetailService.fetchOrderDetailByOrderID(orderID);
 
+    System.out.println("Order detail: " + orderDetail);
     // Log kết quả
     if (orderDetail == null || orderDetail.isEmpty()) {
       System.out.println("No details found for order ID: " + orderID);
@@ -117,9 +116,14 @@ public class AccountController {
       return "error-page"; // Trả về trang lỗi
     }
 
-    System.out.println("Order detail: " + orderDetail);
+
     model.addAttribute("orderDetail", orderDetail);
     return "page/Customer/OrderDetail";
   }
+
+
+
+
+
 }
 

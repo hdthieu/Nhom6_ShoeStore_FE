@@ -28,10 +28,10 @@ public class HomeController {
     List<ProductHomeDTO> top10NewArrivals = productService.getTop10NewArrivals();
     List<ProductHomeDTO> top10Trending = productService.getTop10Trending();
     List<BrandDTO> brands = brandService.getAllBrand();
-//    System.out.println(top10BestSellers);
-//    System.out.println(top10NewArrivals);
-//    System.out.println(top10Trending);
-//    System.out.println(brands);
+    System.out.println(top10BestSellers);
+    System.out.println(top10NewArrivals);
+    System.out.println(top10Trending);
+    System.out.println(brands);
     // Add the data to the model to pass to the Thymeleaf template
     model.addAttribute("top10BestSellers", top10BestSellers);
     model.addAttribute("top10NewArrivals", top10NewArrivals);

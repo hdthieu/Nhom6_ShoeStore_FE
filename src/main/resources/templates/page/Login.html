@@ -17,6 +17,9 @@
     </div>
     <h2>Welcome Back</h2>
     <form th:action="@{/login/auth}" method="POST">
+      <!-- ✅ Thêm dòng này để giữ redirect URL -->
+      <input type="hidden" name="redirectTo" th:value="${redirectTo}" />
+
       <!-- Email input -->
       <div class="textbox">
         <input type="email" value="admin2@example.com" placeholder="Email" name="email" required>
@@ -25,22 +28,27 @@
       <div class="textbox">
         <input type="password" value="securepassword2" placeholder="Password" name="password" required>
       </div>
+
       <!-- Lỗi đăng nhập -->
       <div th:if="${error != null}" style="color: red;">
         <p th:text="${error}"></p>
       </div>
+
       <!-- Remember me checkbox -->
       <div class="remember-me">
         <label for="remember">
           <input type="checkbox" id="remember" name="remember-me"> Remember me
         </label>
       </div>
+
       <!-- Submit button -->
       <input type="submit" value="Login" class="btn">
+
       <div class="footer-links">
         <a href="#">Forgot Password?</a> | <a href="/register">Sign Up</a>
       </div>
     </form>
+
   </div>
 </div>
 </body>

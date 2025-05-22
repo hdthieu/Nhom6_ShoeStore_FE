@@ -28,4 +28,9 @@ public class CartServiceImpl implements CartService {
 
         return response.getBody();
     }
+
+    @Override
+    public CartDTO createCartForUser(int userId) {
+        return null;
+    }
 }
