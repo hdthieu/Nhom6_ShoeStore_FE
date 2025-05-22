@@ -1,6 +1,7 @@
 package com.shoestore.client.controllers;
 
 import com.shoestore.client.client.CartClient;
+import com.shoestore.client.client.ProductClient;
 import com.shoestore.client.dto.request.*;
 import com.shoestore.client.dto.response.CartItemResponseDTO;
 import com.shoestore.client.service.CartItemService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
@@ -33,6 +35,8 @@ public class CartController {
     private HttpSession session;
     @Autowired
     private CartClient cartClient;
+    @Autowired
+    private ProductClient productClient;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,###");
 
     @GetMapping("/show")
@@ -47,45 +51,68 @@ public class CartController {
         }
 
         int userId = user.getUserID();
-
-        // Gọi cart-service để lấy giỏ hàng qua FeignClient
         CartDTO cartDTO = cartClient.getCartByUserId(userId);
+
         if (cartDTO == null || cartDTO.getCartItems() == null) {
-            model.addAttribute("cartItems", List.of()); // Trả về danh sách rỗng nếu không có gì
-            System.out.println("cartItems "+ List.of());
+            model.addAttribute("cartItems", List.of());
             return "page/Customer/Cart";
         }
 
         List<CartItemResponseDTO> cartItems = cartDTO.getCartItems();
 
-        // Bổ sung thông tin sản phẩm cho từng item
         cartItems.forEach(item -> {
-            ProductDTO productDTO = productService.getProductByProductDetail(item.getId().getProductDetailId());
-            ProductDetailDTO productDetailDTO = productDetailService.getProductDetailById(item.getId().getProductDetailId());
+            int productDetailId = item.getId().getProductDetailId();
 
-            item.setProductName(productDTO.getProductName());
-            System.out.println("productDTO.getProductName() " + productDTO.getProductName());
-//            item.setProductImage(productDTO.getImageURL());
-            item.setProductPrice(productDTO.getPrice());
-            item.setColor(productDetailDTO.getColor());
-            item.setSize(productDetailDTO.getSize());
-            item.setProductId(productDTO.getProductID());
-            item.setStockQuantity(productDetailDTO.getStockQuantity());
-            if (productDTO.getImageURL() != null && !productDTO.getImageURL().isEmpty()) {
-                item.setProductImage(productDTO.getImageURL());  // ✅ Lấy đúng 1 ảnh đầu tiên
+            try {
+                System.out.println("➡️ Đang xử lý productDetailId = " + productDetailId);
+
+                ProductDetailDTO productDetailDTO = productClient.getProductDetailById(productDetailId);
+                System.out.println("📦 productDetailDTO = " + productDetailDTO);
+
+                if (productDetailDTO == null) {
+                    System.err.println("❌ productDetailDTO null cho ID: " + productDetailId);
+                    return;
+                }
+
+                ProductDTO productDTO = productClient.getProductById(productDetailDTO.getProductID());
+
+                item.setProductName(productDTO.getProductName());
+                item.setProductImage(productDTO.getImageURL());
+                item.setProductPrice(productDTO.getPrice());
+                item.setProductId(productDTO.getProductID());
+                item.setColor(ColorDTO.valueOf(productDetailDTO.getColor()));
+                item.setSize(SizeDTO.valueOf(productDetailDTO.getSize()));
+
+                System.out.println("📊 stockQuantity nhận từ BE = " + productDetailDTO.getStockQuantity());
+                // nếu cần dùng trong template
+                item.setStockQuantity(100);// gán ngay sau
+                System.out.println("🧪 item class = " + item.getClass().getName());
+
+
+                System.out.println("✅ Sau gán: item.stockQuantity = " + item.getStockQuantity());
+
+            } catch (Exception e) {
+                System.err.println("⚠️ Lỗi khi gọi ProductClient với productDetailId: " + productDetailId + " - " + e.getMessage());
             }
-
         });
+
+// Sau khi xử lý tất cả item
+        System.out.println("\n======== TOÀN BỘ CART ITEMS nè =========");
+        cartItems.forEach(it ->
+                System.out.println("🛒 [" + it.getProductName() + "] - stock = " + it.getStockQuantity())
+        );
 
         model.addAttribute("cartItems", cartItems);
         return "page/Customer/Cart";
+
     }
+
 
 
     @PostMapping("/add")
     public String addCartItem(@RequestParam("productDetailID") int productDetailID,
                               @RequestParam("quantity") int quantity,
-                              Model model) {
+                              RedirectAttributes redirectAttributes) {
         if (session.getAttribute("user") == null) {
             return "redirect:/login";
         }
@@ -97,14 +124,12 @@ public class CartController {
 
         int userId = user.getUserID();
         CartDTO cartDTO = cartService.getCartByUserId(userId);
+
         if (cartDTO == null) {
-            // Nếu giỏ hàng chưa tồn tại, xử lý tùy vào logic hệ thống của bạn
             return "redirect:/customer/cart/show";
         }
 
         CartItemDTO.IdDTO idDTO = new CartItemDTO.IdDTO(cartDTO.getCartID(), productDetailID);
-
-        // Tạo CartItemDTO mới
         CartItemDTO newCartItem = new CartItemDTO();
         newCartItem.setId(idDTO);
         newCartItem.setQuantity(quantity);
@@ -112,13 +137,16 @@ public class CartController {
         newCartItem.setProductDetailDTO(productDetailService.getProductDetailById(productDetailID));
 
         try {
-            cartClient.addCartItem(newCartItem);  // Gọi tới BE qua Feign
+            cartClient.addCartItem(newCartItem);
+            redirectAttributes.addFlashAttribute("successMessage", "✅ Thêm vào giỏ hàng thành công!");
         } catch (Exception e) {
-            System.out.println("❌ Lỗi khi gọi CartClient.addCartItem: " + e.getMessage());
+            e.printStackTrace(); // 👈 thêm dòng này để hiện lỗi rõ ràng
+            redirectAttributes.addFlashAttribute("errorMessage", "❌ Lỗi khi thêm vào giỏ hàng: " + e.getMessage());
         }
 
         return "redirect:/customer/cart/show";
     }
+
 
     @DeleteMapping("/delete/{cartId}/{productDetailId}")
     public String deleteCartItem(@PathVariable("cartId") int cartId,

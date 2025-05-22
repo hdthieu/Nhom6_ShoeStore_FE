@@ -15,4 +15,5 @@ public interface VoucherService {
     public VoucherDTO getVoucherById(int id);
     public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate, String status);
 
+    public VoucherDTO checkVoucherByCode(String code);
 }

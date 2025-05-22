@@ -44,7 +44,7 @@
                 <div class="size-options">
                     <div th:each="detail : ${productDetail}">
                         <button type="button" class="size-box"
-                                th:text="${detail.size.sizeValue}"
+                                th:text="${detail.size}"
                                 th:value="${detail.productDetailID}">
 
                         </button>
@@ -298,7 +298,7 @@
             console.log(price)
             console.log(quantity)
 
-            const url = "/checkoutFromProductDetail"; // Thay URL theo controller của bạn
+            const url = "/customer-checkout/checkoutFromProductDetail"; // Thay URL theo controller của bạn
             const queryParams = new URLSearchParams();
             queryParams.append("productDetailId", parseInt(productDetailId));
             queryParams.append("quantity", parseInt(quantity));

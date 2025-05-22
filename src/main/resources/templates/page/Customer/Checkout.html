@@ -83,11 +83,11 @@
 <!--                 style="object-fit: cover;" />-->
 
 
-            <!--            <span th:text="'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}"></span>-->
+<!--                        <span th:text="'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}"></span>-->
             <div class="checkout-summary__details">
                 <p th:text="${product.name}" class="checkout-summary__product-name"></p>
-                <p th:text="${product.productDetailDTO.color+' / '+product.productDetailDTO.size.sizeValue}"
-                   class="checkout-summary__product-variant"></p>
+<!--                <p th:text="${product.productDetailDTO.color+' / '+product.productDetailDTO.size.sizeValue}"-->
+<!--                   class="checkout-summary__product-variant"></p>-->
                 <p class="checkout-summary__product-variant"
                    th:text="${product.price != null ? product.price : product.productDetailDTO.price} + ' x ' + ${product.quantity}">
                 </p>
@@ -296,6 +296,8 @@
 
 <!--</script>-->
 <script>
+
+
     let appliedVoucher = null;
     let voucherDiscount = 0;
     const fixedDelivery = 50000;
@@ -303,47 +305,81 @@
     document.getElementById("delivery").innerText = "50,000 VNĐ";
     document.getElementById("applyVoucherBtn").addEventListener("click", () => {
         const code = document.getElementById("voucherInput").value.trim();
-        if (!code) return alert("Please enter a voucher code");
+        const messageElem = document.getElementById("voucherMessage");
+        const totalElem = document.getElementById("total");
+        const subTotal = parseInt(document.querySelector(".checkout-summary__subtotal span").innerText.replace(/\D/g, ""));
 
-        fetch(`http://localhost:8765/products/voucher/check?code=${code}`)
-        // fetch(`http://api-gateway:8765/products/voucher/check?code=${code}`)
+        // Reset trạng thái hiển thị cũ
+        messageElem.innerText = "";
+        messageElem.style.color = "orange";
 
+        if (!code) {
+            messageElem.innerText = "⚠️ Vui lòng nhập mã giảm giá!";
+            return;
+        }
+
+        messageElem.innerText = "⏳ Đang kiểm tra mã...";
+
+        fetch(`/customer-checkout/voucher/check?code=${code}`)
             .then(async res => {
-                const data = await res.text();
-                if (!res.ok) throw new Error(data);
-                return JSON.parse(data); // hoặc nếu response là JSON: await res.json()
-            })
-            .then(voucher => {
-                appliedVoucher = voucher;
-                const subTotal = parseInt(document.querySelector(".checkout-summary__subtotal span").innerText.replace(/\D/g, ""));
+                const contentType = res.headers.get("content-type") || "";
+                let data = {};
+                try {
+                    data = contentType.includes("application/json") ? await res.json() : {};
+                } catch (err) {
+                    console.warn("⚠️ Không parse được JSON:", err);
+                }
 
-                if (subTotal < voucher.minValueOrder) {
-                    document.getElementById("voucherMessage").innerText = "Minimum order not met!";
-                    appliedVoucher = null;
-                    voucherDiscount = 0;
+                console.log("🔍 Response status:", res.status);
+                console.log("📦 Response data:", data);
+
+                if (!res.ok) {
+                    messageElem.style.color = "red";
+                    if (res.status === 429) {
+                        messageElem.innerText = "🚫 Bạn thao tác quá nhanh. Vui lòng thử lại sau 1 phút.";
+                    } else if (res.status === 503) {
+                        messageElem.innerText = "⚠️ Không thể kết nối tới hệ thống. Vui lòng thử lại sau.";
+                    } else {
+                        messageElem.innerText = data.message || "⚠️ Có lỗi xảy ra khi kiểm tra mã.";
+                    }
                     return;
                 }
 
-                if (voucher.discountType === "PERCENTAGE") {
-                    voucherDiscount = Math.floor(subTotal * voucher.discountValue / 100);
-                } else if (voucher.discountType === "FLAT") {
-                    voucherDiscount = voucher.discountValue;
-                } else {
-                    throw new Error("Loại giảm giá không hợp lệ");
+                if (!data.valid) {
+                    messageElem.style.color = "red";
+                    messageElem.innerText = data.message || "❌ Mã không hợp lệ.";
+                    return;
                 }
 
-                document.getElementById("voucherMessage").innerText = `Applied: -${voucherDiscount} VND`;
+                if (subTotal < data.minValueOrder) {
+                    messageElem.style.color = "red";
+                    messageElem.innerText = `⚠️ Đơn hàng phải từ ${data.minValueOrder.toLocaleString()} VND mới áp dụng được mã này.`;
+                    return;
+                }
 
-                const shipping = parseInt(document.getElementById("delivery").innerText.replace(/\D/g, "")) || 0;
-                const total = subTotal + fixedDelivery - voucherDiscount;
-                document.getElementById("total").innerText = total.toLocaleString('vi-VN') + " VND";
+                const discount = data.type === "PERCENT"
+                    ? Math.floor(subTotal * data.discount / 100)
+                    : data.discount;
+
+                const total = subTotal + 50000 - discount;
+
+                messageElem.style.color = "green";
+                messageElem.innerText = `🎉 Mã hợp lệ: Giảm ${discount.toLocaleString()} VND`;
+                totalElem.innerText = total.toLocaleString() + " VND";
             })
             .catch(err => {
-                appliedVoucher = null;
-                voucherDiscount = 0;
-                document.getElementById("voucherMessage").innerText = err.message || "Invalid or expired voucher";
+                console.error("❌ Lỗi gọi API:", err);
+                messageElem.style.color = "red";
+                messageElem.innerText = "❌ Không thể kiểm tra mã. Kiểm tra kết nối hoặc thử lại sau.";
             });
+
     });
+
+
+
+
+
+
 
 
 
@@ -384,7 +420,7 @@
         }
         // Show loading spinner
         document.getElementById("loadingOverlay").style.display = "flex";
-        fetch("/payment/add", {
+        fetch("/customer-checkout/payment/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)

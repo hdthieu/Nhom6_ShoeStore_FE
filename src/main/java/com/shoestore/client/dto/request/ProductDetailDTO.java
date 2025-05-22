@@ -15,19 +15,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true) // ✅ Bỏ qua nếu field "product" không tồn tại
 public class ProductDetailDTO {
     private int productDetailID;
-    private ColorDTO color;
-    private SizeDTO size;
+    private String color;
+    private String size;
     private int stockQuantity;
     private double price;
-//    private ProductDTO product;
-
-    public ProductDetailDTO(int productDetailID) {
-        this.productDetailID = productDetailID;
-    }
+    private ProductDTO product;
+    private int productID;
 }
