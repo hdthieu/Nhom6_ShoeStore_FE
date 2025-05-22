@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <link rel="stylesheet" href="/css/Login.css">
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 </head>
 
 <body>
@@ -26,8 +35,17 @@
                 <input type="tel" placeholder="Phone Number" name="phoneNumber" required>
             </div>
             <div class="textbox">
-                <input type="password" placeholder="Password" name="password" required>
+                <input type="tel" placeholder="CI" name="ci" required>
             </div>
+            <div class="textbox" style="position: relative;">
+                <input type="password" placeholder="Password" name="password" id="password" required>
+                <span onclick="togglePassword('password', this)" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:black; font-size: 12px; opacity: 0.6;">Hiện</span>
+            </div>
+            <div class="textbox" style="position: relative;">
+                <input type="password" placeholder="Confirm Password" name="confirmPassword" id="confirmPassword" required>
+                <span onclick="togglePassword('confirmPassword', this)" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:black; font-size: 12px; opacity: 0.6;">Hiện</span>
+            </div>
+
             <input type="submit" value="Register" class="btn">
             <div class="footer-links">
                 <a href="/login">Already have an account? Login</a>
@@ -35,6 +53,33 @@
         </form>
     </div>
 </div>
+
+<script>
+    function togglePassword(id, element) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+            element.textContent = "Ẩn";
+        } else {
+            input.type = "password";
+            element.textContent = "Hiện";
+        }
+    }
+
+    // Kiểm tra mật khẩu khớp
+    document.querySelector("form").addEventListener("submit", function (e) {
+        const password = document.querySelector('input[name="password"]').value;
+        const confirmPassword = document.querySelector('input[name="confirmPassword"]').value;
+
+        if (password !== confirmPassword) {
+            toastr.error("Mật khẩu và xác nhận mật khẩu không khớp!", "Lỗi");
+            e.preventDefault();
+        }
+    });
+</script>
+
+
+
 </body>
 
 </html>

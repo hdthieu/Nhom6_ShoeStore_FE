@@ -40,8 +40,8 @@
 
                     <p class="cart-item__price">
 
-                        <span th:text="'Price: '+${cartItem.productPrice} + ' VNĐ'"></span>
-
+<!--                        <span th:text="'Price: '+${cartItem.productPrice} + ' VNĐ'"></span>-->
+                            <span  th:text="${#numbers.formatDecimal(cartItem.productPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'" > </span>
                         </span>
 
                     </p>
@@ -59,8 +59,10 @@
                 </div>
 
                 <div class="cart-item__actions">
-                    <div class="cart-item__total-price" th:text="${cartItem.productPrice * cartItem.quantity}+ ' VNĐ'">
-                    </div>
+<!--                    <div class="cart-item__total-price" th:text="${cartItem.productPrice * cartItem.quantity}+ ' VNĐ'">-->
+                    <div class="cart-item__total-price" th:text="${#numbers.formatDecimal(cartItem.productPrice * cartItem.quantity, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'" >
+
+                </div>
                     <span class="cart-item__delete"><i class="fas fa-trash"></i> Delete</span>
                 </div>
             </div>

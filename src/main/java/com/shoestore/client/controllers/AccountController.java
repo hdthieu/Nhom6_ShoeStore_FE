@@ -73,6 +73,12 @@ public class AccountController {
     return "page/Customer/MyAccount";
   }
 
+  @GetMapping("/customer/account/add-address")
+  public String addAddress(Model model) {
+
+    return "page/Customer/AddAddress";
+  }
+
   @GetMapping("/customer/account/my-address")
   public String showAddress(Model model) {
     UserDTO user = (UserDTO) session.getAttribute("user");
@@ -122,8 +128,14 @@ public class AccountController {
   }
 
 
+  @PostMapping("/customer/account/add-address")
+  public String handleAddAddress(@ModelAttribute AddressDTO addressDTO) {
+    UserDTO user = (UserDTO) session.getAttribute("user");
+    if (user == null) return "redirect:/login";
 
-
+    addressService.createAddress(user.getUserID(), addressDTO);
+    return "redirect:/customer/account";
+  }
 
 }
 
