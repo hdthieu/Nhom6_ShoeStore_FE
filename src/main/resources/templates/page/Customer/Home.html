@@ -282,6 +282,26 @@
 
 
   <div id="footer"></div>
+  <!-- Chatbot Widget -->
+  <!-- Toggle Button -->
+  <!-- Toggle Button -->
+  <div id="chatbot-toggle" class="chatbot-toggle shadow">
+    <i class="fas fa-robot"></i>
+  </div>
+
+  <!-- Chatbot Widget -->
+  <div id="chatbot-widget" class="chatbot-widget d-none">
+    <div class="chatbot-header">
+      <span><i class="fas fa-robot"></i> Trợ lý giày</span>
+      <span id="chatbot-close" class="close-btn">&times;</span>
+    </div>
+    <div class="chatbot-body" id="chatbot-messages"></div>
+    <div class="chatbot-input">
+      <input type="text" id="chatbot-input-field" placeholder="Bạn cần hỗ trợ gì?" />
+      <button id="chatbot-send-btn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
   <script th:src="@{/js/script.js}"></script>
   <script th:src="@{/js/Home.js}"></script>
 
@@ -289,6 +309,56 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    const toggleBtn = document.getElementById('chatbot-toggle');
+    const widget = document.getElementById('chatbot-widget');
+    const closeBtn = document.getElementById('chatbot-close');
+    const sendBtn = document.getElementById('chatbot-send-btn');
+    const inputField = document.getElementById('chatbot-input-field');
+    const messagesDiv = document.getElementById('chatbot-messages');
+
+    toggleBtn.addEventListener('click', () => {
+      widget.classList.toggle('d-none');
+      if (!widget.classList.contains('d-none')) inputField.focus();
+    });
+
+    closeBtn.addEventListener('click', () => {
+      widget.classList.add('d-none');
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputField.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    function sendMessage() {
+      const message = inputField.value.trim();
+      if (!message) return;
+
+      appendMessage(message, 'user');
+      inputField.value = '';
+
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: message })
+      })
+              .then(res => res.json())
+              .then(data => appendMessage(data.answer, 'bot'))
+              .catch(() => appendMessage("❌ Lỗi khi gọi chatbot!", 'bot'));
+    }
+
+    function appendMessage(text, sender) {
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('chat-message', sender === 'user' ? 'user-msg' : 'bot-msg');
+      msgDiv.innerHTML = text.replace(/\n/g, "<br>"); // Giữ format xuống dòng
+      messagesDiv.appendChild(msgDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+
+  </script>
+
 </body>
 
 </html>

@@ -28,6 +28,8 @@ public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private RestTemplate restTemplate;
     private static final String SERVER_URL = "http://localhost:8765/products/voucher";
+
+//    private static final String SERVER_URL = "http://api-gateway:8765/products/voucher";
     @Override
     public List<VoucherDTO> searchVouchers(LocalDate startDate, LocalDate endDate, String status) {
         StringBuilder urlBuilder = new StringBuilder(SERVER_URL + "/search?");

@@ -4,7 +4,8 @@ import com.shoestore.client.dto.request.OrderCheckoutDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "order-service", url = "http://localhost:8765") // KHÔNG có /Order
+@FeignClient(name = "order-service", url = "http://localhost:8765")
+//@FeignClient(name = "order-service", url = "http://api-gateway:8765")
 public interface OrderClient {
 
     @PostMapping("/Order/add")

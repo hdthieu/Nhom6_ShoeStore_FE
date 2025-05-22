@@ -75,6 +75,12 @@
                  width="200"
                  height="200"
                  style="object-fit: cover;" />
+<!--            <img th:if="${product.image != null and #lists.size(product.image) > 0}"-->
+<!--                 th:src="@{'http://api-gateway:8765/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}}"-->
+<!--                 alt="Ảnh sản phẩm"-->
+<!--                 width="200"-->
+<!--                 height="200"-->
+<!--                 style="object-fit: cover;" />-->
 
 
             <!--            <span th:text="'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}"></span>-->
@@ -300,6 +306,8 @@
         if (!code) return alert("Please enter a voucher code");
 
         fetch(`http://localhost:8765/products/voucher/check?code=${code}`)
+        // fetch(`http://api-gateway:8765/products/voucher/check?code=${code}`)
+
             .then(async res => {
                 const data = await res.text();
                 if (!res.ok) throw new Error(data);

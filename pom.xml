@@ -26,8 +26,12 @@
         <tag/>
         <url/>
     </scm>
+<!--    <properties>-->
+<!--        <java.version>17</java.version>-->
+<!--    </properties>-->
     <properties>
         <java.version>17</java.version>
+        <start-class>com.shoestore.client.ClientApplication</start-class> <!-- CHỌN LỚP MAIN -->
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -43,6 +47,7 @@
 
 
     <dependencies>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -125,9 +130,15 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
+        <finalName>frontend</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

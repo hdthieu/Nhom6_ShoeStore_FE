@@ -6,6 +6,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "cart-service", url = "http://localhost:8765")
+//@FeignClient(name = "cart-service", url = "http://api-gateway:8765")
+
 public interface CartClient {
 
     @PostMapping("/cart/add")

@@ -52,6 +52,7 @@ public class CartController {
         CartDTO cartDTO = cartClient.getCartByUserId(userId);
         if (cartDTO == null || cartDTO.getCartItems() == null) {
             model.addAttribute("cartItems", List.of()); // Trả về danh sách rỗng nếu không có gì
+            System.out.println("cartItems "+ List.of());
             return "page/Customer/Cart";
         }
 
@@ -63,6 +64,7 @@ public class CartController {
             ProductDetailDTO productDetailDTO = productDetailService.getProductDetailById(item.getId().getProductDetailId());
 
             item.setProductName(productDTO.getProductName());
+            System.out.println("productDTO.getProductName() " + productDTO.getProductName());
 //            item.setProductImage(productDTO.getImageURL());
             item.setProductPrice(productDTO.getPrice());
             item.setColor(productDetailDTO.getColor());

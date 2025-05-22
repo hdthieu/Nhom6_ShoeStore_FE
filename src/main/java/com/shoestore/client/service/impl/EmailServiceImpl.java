@@ -28,6 +28,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public String sendInvoiceEmail(Map<String, Object> orderDetails) {
         String url = "http://localhost:8765/notification/sendEmail";
+//        String url = "http://api-gateway:8765/notification/sendEmail";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 

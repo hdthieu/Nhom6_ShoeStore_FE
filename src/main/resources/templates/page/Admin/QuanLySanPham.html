@@ -209,6 +209,9 @@
                                 <img th:src="@{http://localhost:8765/images/{image}(image=${image})}"
                                      alt="Hình ảnh sản phẩm" class="image-preview"
                                      style="max-width: 50px; max-height: 50px; margin-right: 5px;" />
+<!--                                <img th:src="@{http://api-gateway:8765/images/{image}(image=${image})}"-->
+<!--                                     alt="Hình ảnh sản phẩm" class="image-preview"-->
+<!--                                     style="max-width: 50px; max-height: 50px; margin-right: 5px;" />-->
                             </div>
                         </td>
                         <td th:text="${product.category.name}"></td>
@@ -284,6 +287,8 @@
 
             // Gửi yêu cầu DELETE đến API để xóa sản phẩm
             fetch(`http://localhost:8765/products/delete/${productID}`, {
+            // fetch(`http://api-gateway:8765/products/delete/${productID}`, {
+
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

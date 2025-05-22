@@ -21,6 +21,8 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public List<AddressDTO> getAddressByUserId(int id) {
         String apiUrl = "http://localhost:8765/address/user/" + id;
+//        String apiUrl = "http://api-gateway:8765/address/user/" + id;
+
         ResponseEntity<List<AddressDTO>> response = restTemplate.exchange(
                 apiUrl,
                 HttpMethod.GET,
@@ -33,6 +35,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDTO getAddressById(int id) {
         String apiUrl="http://localhost:8765/address/"+id;
+//        String apiUrl="http://api-gateway:8765/address/"+id;
         ResponseEntity<AddressDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, AddressDTO.class
         );

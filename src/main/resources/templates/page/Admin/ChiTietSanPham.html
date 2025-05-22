@@ -146,6 +146,9 @@
                         <img th:src="@{http://localhost:8765/images/{image}(image=${product.imageURL[0]})}"
                              alt="Hình ảnh sản phẩm"
                              style="width:100%; height:auto; border:1px solid #ccc; padding:5px;" />
+<!--                        <img th:src="@{http://api-gateway:8765/images/{image}(image=${product.imageURL[0]})}"-->
+<!--                             alt="Hình ảnh sản phẩm"-->
+<!--                             style="width:100%; height:auto; border:1px solid #ccc; padding:5px;" />-->
                     </th:block>
                 </div>
 
@@ -330,6 +333,7 @@
 
         // Gửi request POST tới API
         fetch('http://localhost:8765/products-details', {
+        // fetch('http://api-gateway:8765/products-details', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -377,6 +381,7 @@
         };
 
         fetch(`http://localhost:8765/products-details/detail/${productDetailID}`, {
+        // fetch(`http://api-gateway:8765/products-details/detail/${productDetailID}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

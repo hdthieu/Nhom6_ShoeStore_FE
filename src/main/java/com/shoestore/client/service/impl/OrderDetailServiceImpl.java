@@ -23,6 +23,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Autowired
     private RestTemplate restTemplate;
     private static final String SERVER_API_URL = "http://localhost:8765/Order/OrderDetail/layTT/";
+//    private static final String SERVER_API_URL = "http://api-gateway:8765/Order/OrderDetail/layTT/";
 
 
     public Map<String, Object> fetchOrderDetailByOrderID(int orderID) {
@@ -34,6 +35,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     public List<ProductDTO> getAvailableProducts(int orderID) {
         String productApiUrl = "http://localhost:8765/Order/OrderDetail/add";
+//        String productApiUrl = "http://api-gateway:8765/Order/OrderDetail/add";
         ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
                 productApiUrl + orderID,
                 HttpMethod.GET,
@@ -47,6 +49,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public String addOrderDetail(OrderDetailRequestDTO dto) {
         String apiUrl = "http://localhost:8765/Order/OrderDetail/add";
+//        String apiUrl = "http://api-gateway:8765/Order/OrderDetail/add";
         ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, dto, String.class);
         return response.getBody();
     }

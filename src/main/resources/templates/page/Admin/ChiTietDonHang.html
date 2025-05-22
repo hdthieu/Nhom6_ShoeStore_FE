@@ -211,8 +211,9 @@
                       <td th:text="${iterStat.count}"></td> <!-- Thứ tự sản phẩm -->
 
                       <td style="width: 150px; height: 90px; text-align: center;">
-                        <img th:src="@{'http://localhost:8765/images/' + ${product.imgUrl}}"
-                             alt="Product Image">
+                        <img th:src="@{'http://localhost:8765/images/' + ${product.imgUrl}}" alt="Product Image">
+<!--                      <img th:src="@{'http://api-gateway:8765/images/' + ${product.imgUrl}}" alt="Product Image">-->
+
                       </td>
 
                       <td>
@@ -344,6 +345,8 @@
         console.log(selectedOption)
         // Gửi request đến server
         fetch('http://localhost:8765/Order/update-status', {
+        // fetch('http://api-gateway:8765/Order/update-status', {
+
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({

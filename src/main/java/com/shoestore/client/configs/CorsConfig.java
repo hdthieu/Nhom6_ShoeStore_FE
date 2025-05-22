@@ -17,7 +17,8 @@ public class CorsConfig {
         // cho phép các URL nào có thể kết nối tới backend
         configuration.setAllowedOrigins(
                 Arrays.asList("http://localhost:8765"));
-
+//        configuration.setAllowedOrigins(
+//                Arrays.asList("http://api-gateway:8765"));
         // các method nào đc kết nối
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 

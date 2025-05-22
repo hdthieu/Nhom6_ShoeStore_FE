@@ -25,7 +25,7 @@ public class HomeController {
     List<ProductHomeDTO> top10BestSellers = productService.getTop10BestSellers();
     List<ProductHomeDTO> top10NewArrivals = productService.getTop10NewArrivals();
     List<ProductHomeDTO> top10Trending = productService.getTop10Trending();
-    List<BrandDTO> brands = brandService.getAllBrand();
+    List<BrandDTO> brands = brandService.getAllBrands();
 //    System.out.println(top10BestSellers);
 //    System.out.println(top10NewArrivals);
 //    System.out.println(top10Trending);

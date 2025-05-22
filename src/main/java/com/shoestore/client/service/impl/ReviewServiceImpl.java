@@ -28,6 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
     private RestTemplate restTemplate;
     @Override
     public List<ReviewDTO> getAllReview() {
+//        String apiUrl="http://localhost:8080/reviews";
         String apiUrl="http://localhost:8080/reviews";
         ResponseEntity<ReviewResponseDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, ReviewResponseDTO.class
@@ -40,7 +41,9 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponseDTO getReviewByRating(int rating, int page, int size) {
         // Xây dựng URL cho API với tham số phân trang và rating
         String apiUrl = UriComponentsBuilder
+//                .fromHttpUrl("http://localhost:8080/reviews/rating/{rating}")
                 .fromHttpUrl("http://localhost:8080/reviews/rating/{rating}")
+
                 .queryParam("page", page)
                 .queryParam("size", size)
                 .buildAndExpand(rating)
@@ -62,7 +65,9 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponseDTO findReviews(Integer rating, int page, int size, String nameProduct, String sortOrder) {
         // Xây dựng URL với tất cả tham số, kể cả rating (cho phép null)
         String apiUrl = UriComponentsBuilder
+//                .fromHttpUrl("http://localhost:8080/reviews/findreviews")
                 .fromHttpUrl("http://localhost:8080/reviews/findreviews")
+
                 .queryParam("rating", rating)  // Rating có thể null
                 .queryParam("page", page)
                 .queryParam("size", size)

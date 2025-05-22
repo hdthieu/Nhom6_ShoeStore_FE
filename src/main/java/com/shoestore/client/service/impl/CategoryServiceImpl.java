@@ -30,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDTO> getAllCategory() {
         String apiUrl="http://localhost:8765/products/add";
+//        String apiUrl="http://api-gateway:8765/products/add";
         ResponseEntity<CategoryResponseDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, CategoryResponseDTO.class
         );
@@ -39,6 +40,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryProductCountDTO> getCountProduct() {
         String apiUrl = "http://localhost:8765/category/count";
+//        String apiUrl = "http://api-gateway:8765/category/count";
+
 
         // Gọi API trả về dữ liệu
         ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.GET, null, Map.class);

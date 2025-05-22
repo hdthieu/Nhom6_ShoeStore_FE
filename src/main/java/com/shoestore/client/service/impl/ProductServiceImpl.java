@@ -25,6 +25,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> getAllProduct() {
         String apiUrl="http://localhost:8765/products";
+//        String apiUrl="http://api-gateway:8765/products";
+
         ResponseEntity<ProductResponseDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, ProductResponseDTO.class
         );
@@ -36,6 +38,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO addProduct(ProductDTO productDTO) {
         String apiUrl = "http://localhost:8765/products/add";
+//        String apiUrl = "http://api-gateway:8765/products/add";
+
         ResponseEntity<ProductDTO> response = restTemplate.postForEntity(
                 apiUrl, productDTO, ProductDTO.class
         );
@@ -45,6 +49,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO getProductByIdForDetail(int id) {
         String apiUrl="http://localhost:8765/products/detailFor/"+id;
+
+//        String apiUrl="http://api-gateway:8765/products/detailFor/"+id;
         ResponseEntity<ProductDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, ProductDTO.class
         );
@@ -54,6 +60,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO getProductByProductDetail(int id) {
         String apiUrl = "http://localhost:8765/products-details/productDetailId/" + id;
+//        String apiUrl = "http://api-gateway:8765/products-details/productDetailId/" + id;
+
         ResponseEntity<ProductDTO> response = restTemplate.exchange(
                 apiUrl, HttpMethod.GET, null, ProductDTO.class
         );
@@ -66,6 +74,7 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDTO> getFilteredProducts(List<Integer> categoryIds, List<Integer> brandIds, List<String> color, List<String> size,String sortBy) {
         StringBuilder apiUrl = new StringBuilder("http://localhost:8765/products/filtered");
 
+//        StringBuilder apiUrl = new StringBuilder("http://api-gateway:8765/products/filtered");
         // Thêm các tham số vào URL nếu không null
         boolean hasParam = false;
         if (categoryIds != null && !categoryIds.isEmpty()) {
@@ -121,6 +130,7 @@ public class ProductServiceImpl implements ProductService {
         // Xây dựng URL với tất cả tham số, kể cả keyword (cho phép null)
         String apiUrl = UriComponentsBuilder
                 .fromHttpUrl("http://localhost:8765/products/findproducts")
+//                .fromHttpUrl("http://api-gateway:8765/products/findproducts")
                 .queryParam("keyword", keyword) // Keyword có thể null
                 .queryParam("page", page)       // Trang
                 .queryParam("size", size)       // Kích thước mỗi trang

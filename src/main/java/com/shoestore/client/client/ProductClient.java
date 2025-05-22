@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.List;
 
 @FeignClient(name = "PRODUCT-SERVICE", url = "http://localhost:8765")
+//@FeignClient(name = "PRODUCT-SERVICE", url = "http://api-gateway:8765")
+
 public interface ProductClient {
 
     // Lấy ProductDetail theo productDetailId
