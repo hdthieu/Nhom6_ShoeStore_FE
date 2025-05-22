@@ -60,6 +60,46 @@ function renderVoucherList(vouchers) {
     });
 }
 
+// function renderVoucherList(vouchers) {
+//     const voucherListElement = document.getElementById("voucher-list");
+//     voucherListElement.innerHTML = ""; // Xóa danh sách hiện tại
+//
+//     vouchers.forEach((voucher) => {
+//         const row = document.createElement("tr");
+//         row.innerHTML += `<td>${voucher.voucherID}</td>`;
+//         row.innerHTML += `<td>${voucher.name}</td>`;
+//         row.innerHTML += `<td>
+//             <span ${voucher.discountType === "Flat" ? 'class="currency"' : ''}>${voucher.discountType === "Flat" ? formatCurrency(voucher.discountValue) : voucher.discountValue + " %"}</span>
+//         </td>`;
+//         row.innerHTML += `<td>${voucher.startDate}</td>`;
+//         row.innerHTML += `<td>${voucher.endDate}</td>`;
+//         row.innerHTML += `<td>${voucher.status}</td>`;
+//         row.innerHTML += `<td class="currency">${voucher.minValueOrder}</td>`;
+//         row.innerHTML += `
+//             <td>
+//                 <button class="btn btn-primary btn-sm edit-btn">Edit</button>
+//                 <button class="btn btn-danger btn-sm delete-btn" data-id="${voucher.voucherID}">Delete</button>
+//             </td>
+//         `;
+//         voucherListElement.appendChild(row);
+//
+//         // Thêm sự kiện cho nút Edit
+//         const editButton = row.querySelector(".edit-btn");
+//         editButton.addEventListener("click", function () {
+//             handleEditVoucher(this);
+//         });
+//
+//         // Thêm sự kiện cho nút Delete
+//         const deleteButton = row.querySelector(".delete-btn");
+//         deleteButton.addEventListener("click", function () {
+//             const voucherID = this.getAttribute("data-id");
+//             if (confirm("Bạn có chắc chắn muốn xóa voucher này không?")) {
+//                 deleteVoucher(voucherID, row);
+//             }
+//         });
+//     });
+// }
+
 document.getElementById("voucher-form").addEventListener("submit", function (event) {
     // Ngăn hành vi mặc định của form (submit)
     event.preventDefault();
@@ -244,28 +284,53 @@ function formatCurrency(value) {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 }
 
+// function handleSearch() {
+//     // Lấy giá trị từ các input date
+//     const startDate = document.getElementById("searchStartDate").value;
+//     const endDate = document.getElementById("searchEndDate").value;
+//
+//     // Kiểm tra nếu các giá trị ngày hợp lệ
+//     if (!startDate || !endDate) {
+//         alert("Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.");
+//         return;
+//     }
+//
+//     // Gọi API để tìm kiếm các voucher theo ngày
+//     fetch(`/admin/vouchers/search?startDate=${startDate}&endDate=${endDate}`)
+//         .then(response => response.json())
+//         .then(data => {
+//             renderVoucherList(data); // `data` sẽ là một mảng `Voucher`
+//         })
+//         .catch(error => {
+//             console.error("Lỗi khi tìm kiếm:", error);
+//         });
+//
+// }
 function handleSearch() {
-    // Lấy giá trị từ các input date
     const startDate = document.getElementById("searchStartDate").value;
     const endDate = document.getElementById("searchEndDate").value;
+    const status = document.getElementById("searchStatus").value;
 
-    // Kiểm tra nếu các giá trị ngày hợp lệ
-    if (!startDate || !endDate) {
-        alert("Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.");
-        return;
+    let url = "/admin/vouchers/search";
+    let params = [];
+
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (status) params.push(`status=${status}`);
+
+    if (params.length > 0) {
+        url += "?" + params.join("&");
     }
 
-    // Gọi API để tìm kiếm các voucher theo ngày
-    fetch(`/admin/vouchers/search?startDate=${startDate}&endDate=${endDate}`)
+    fetch(url)
         .then(response => response.json())
-        .then(data => {
-            renderVoucherList(data); // `data` sẽ là một mảng `Voucher`
-        })
-        .catch(error => {
-            console.error("Lỗi khi tìm kiếm:", error);
-        });
-
+        .then(data => renderVoucherList(data))
+        .catch(error => console.error("Lỗi khi tìm kiếm:", error));
 }
+
+
+
+
 
 document.querySelectorAll('.currency').forEach((element) => {
     const value = parseFloat(element.textContent.trim());

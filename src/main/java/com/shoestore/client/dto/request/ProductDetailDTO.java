@@ -24,6 +24,7 @@ public class ProductDetailDTO {
     private ColorDTO color;
     private SizeDTO size;
     private int stockQuantity;
+    private double price;
 //    private ProductDTO product;
 
     public ProductDetailDTO(int productDetailID) {

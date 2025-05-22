@@ -117,9 +117,13 @@
                         <div class="col-md-4 mb-4">
                             <a th:href="@{'/product-details/' + ${product.productID}}" class="link-details">
                                 <div class="product-card">
-                                    <img th:src="@{'http://localhost:8080/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}}"
-                                         alt="Product Image">
-<!--                                    <span th:text="'http://localhost:8080/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}"></span>-->
+                                    <img th:src="@{'http://localhost:8765/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}}"
+                                         alt="Ảnh sản phẩm" width="200" height="300"/>
+
+
+
+
+                                    <!--                                    <span th:text="'http://localhost:8765/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}"></span>-->
 <!--                                    <img th:src="@{${product.imageURL.get(0)}}"/>-->
                                     <div class="product-info">
                                         <h6 th:text="${product.productName}"></h6>

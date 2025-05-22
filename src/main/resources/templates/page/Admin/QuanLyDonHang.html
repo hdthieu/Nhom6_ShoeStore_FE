@@ -79,19 +79,21 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr th:if="${ordersPage.empty}">
+                  <tr th:if="${!ordersPage.hasContent()}">
                     <td colspan="6" class="text-center text-danger">Không có đơn hàng nào</td>
                   </tr>
-                  <tr th:each="order : ${ordersPage.content}" th:unless="${ordersPage.empty}">
+                  <tr th:each="order : ${ordersPage.content}" th:unless="${!ordersPage.hasContent()}">
                     <td th:text="${order.orderID}"></td>
                     <td th:text="${order.dateCreated}"></td>
                     <td th:text="${order.name}"></td>
                     <td class="price" th:text="${order.totalPrice}"></td>
                     <td th:text="${order.status}"></td>
                     <td>
-                      <a class="btn btn-primary btn-sm" th:href="@{/admin/orderDetail/view/{orderID}(orderID=${order.orderID})}">Xem</a>
+                      <a class="btn btn-primary btn-sm"
+                         th:href="@{/admin/orderDetail/view/{orderID}(orderID=${order.orderID})}">Xem</a>
                     </td>
                   </tr>
+
                   </tbody>
 
                 </table>

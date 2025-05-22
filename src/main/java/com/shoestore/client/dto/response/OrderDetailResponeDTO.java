@@ -9,6 +9,6 @@ import lombok.Data;
 public class OrderDetailResponeDTO {
     private double price;
     private int quantity;
-    private ProductDetailDTO productDetail;
-    private OrderCheckoutDTO order;
+    private int productDetailId; // sửa từ ProductDetailDTO thành int
+    private Long orderId;        // sửa từ OrderCheckoutDTO thành Long
 }

@@ -1,8 +1,8 @@
 package com.shoestore.client.service.impl;
 
+import com.shoestore.client.client.ProductClient;
 import com.shoestore.client.dto.request.*;
-import com.shoestore.client.dto.response.BestSellerDTO;
-import com.shoestore.client.dto.response.PageDTO;
+import com.shoestore.client.dto.response.*;
 import com.shoestore.client.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,57 +15,47 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private ProductClient productClient;
+
     @Override
     public Map<String, Object> getRevenueStatistics(String startDate, String endDate) {
-        String SERVER_URL = "http://localhost:8765/Order/revenue";
-        String url = SERVER_URL + "?startDate=" + startDate + "&endDate=" + endDate;
-        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-        return response.getBody();
+        String url = "http://localhost:8765/Order/revenue?startDate=" + startDate + "&endDate=" + endDate;
+        return restTemplate.getForObject(url, Map.class);
     }
-    public List<OrderDTO> getOrdersFromServer() {
-        String apiUrl = "http://localhost:8765/Order/dsachOrders";
-        ResponseEntity<List<OrderDTO>> responseEntity = restTemplate.exchange(
-                apiUrl, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<OrderDTO>>() {});
 
-        return responseEntity.getBody();
+    public List<OrderDTO> getOrdersFromServer() {
+        String url = "http://localhost:8765/Order/dsachOrders";
+        ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(
+                url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
+        );
+        return response.getBody();
     }
 
     public Page<OrderDTO> getOrdersWithPagination(Pageable pageable) {
-        String apiUrl = "http://localhost:8765/Order/dsachOrders";
-        ResponseEntity<List<OrderDTO>> responseEntity = restTemplate.exchange(
-                apiUrl, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<OrderDTO>>() {});
-
-        List<OrderDTO> orders = responseEntity.getBody();
+        List<OrderDTO> orders = getOrdersFromServer();
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), orders.size());
-        List<OrderDTO> pageContent = orders.subList(start, end);
-        return new PageImpl<>(pageContent, pageable, orders.size());
+        return new PageImpl<>(orders.subList(start, end), pageable, orders.size());
     }
 
     @Override
     public List<BestSellerDTO> getTopSellingProducts(String type) {
-        String SERVER_API_URL = "http://localhost:8765/Order/bestsellers";
-        String url = String.format("%s?type=%s&limit=5", SERVER_API_URL, type);
+        String url = String.format("http://localhost:8765/Order/bestsellers?type=%s&limit=5", type);
         try {
             ResponseEntity<List<BestSellerDTO>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<BestSellerDTO>>() {}
+                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
             );
-            List<BestSellerDTO> products = response.getBody();
-           System.out.println("Products received: " + products.size());
-            return products;
-       } catch (Exception e) {
-           e.printStackTrace();
+            return response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
             return Collections.emptyList();
         }
     }
@@ -73,50 +63,38 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, Object> getYearlyRevenue() {
         String url = "http://localhost:8765/Order/yearly-revenue";
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-        return response;
-//        return null;
+        return restTemplate.getForObject(url, Map.class);
     }
 
-    // Lấy danh sách 10 khách haàng thân thiết
     @Override
     public List<Map<String, Object>> getTop10LoyalCustomers() {
-        String url = "http://localhost:8765/Order/loyal-customers?minOrders=" ;
+        String url = "http://localhost:8765/Order/loyal-customers?minOrders=";
         ResponseEntity<List> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                List.class
+                url, HttpMethod.GET, null, List.class
         );
         return response.getBody();
     }
 
     @Override
     public Map<String, Long> getOrderStatistics() {
-        String SERVER_API_URL = "http://localhost:8765/Order/OrderStatistics";
-        ResponseEntity<Map> response = restTemplate.getForEntity(SERVER_API_URL, Map.class);
-        return response.getBody();
+        String url = "http://localhost:8765/Order/OrderStatistics";
+        return restTemplate.getForObject(url, Map.class);
     }
 
     @Override
     public OrderCheckoutDTO addOrder(OrderCheckoutDTO orderCheckoutDTO) {
-        String apiUrl = "http://localhost:8765/Order/add";
-        ResponseEntity<OrderCheckoutDTO> response=restTemplate.postForEntity(
-                apiUrl,orderCheckoutDTO, OrderCheckoutDTO.class
-        );
-        return response.getBody();
+        String url = "http://localhost:8765/Order/add";
+        return restTemplate.postForObject(url, orderCheckoutDTO, OrderCheckoutDTO.class);
     }
 
     @Override
     public OrderCheckoutDTO getById(int id) {
-        String apiUrl = "http://localhost:8765/Order/" + id;
+        String url = "http://localhost:8765/Order/" + id;
         ResponseEntity<OrderCheckoutDTO> response = restTemplate.exchange(
-                apiUrl, HttpMethod.GET, null, OrderCheckoutDTO.class
+                url, HttpMethod.GET, null, OrderCheckoutDTO.class
         );
-        System.out.println("Response Body: " + response.getBody());
         return response.getBody();
     }
-
 
     @Override
     public List<OrderDTO> getOrdersByUserId(int userId) {
@@ -140,21 +118,17 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Error fetching orders: " + e.getMessage(), e);
         }
     }
-
     @Override
     public Page<OrderDTO> findByStatus(String status, Pageable pageable) {
-        String apiUrl = "http://localhost:8765/Order/searchStatus?status=" + status
-                + "&page=" + pageable.getPageNumber()
-                + "&size=" + pageable.getPageSize();
+        String url = "http://localhost:8765/Order/searchStatus?status=" + status +
+                "&page=" + pageable.getPageNumber() +
+                "&size=" + pageable.getPageSize();
 
-        ResponseEntity<PageDTO<OrderDTO>> responseEntity = restTemplate.exchange(
-                apiUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<PageDTO<OrderDTO>>() {}
+        ResponseEntity<PageDTO<OrderDTO>> response = restTemplate.exchange(
+                url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
         );
 
-        PageDTO<OrderDTO> pageData = responseEntity.getBody();
+        PageDTO<OrderDTO> pageData = response.getBody();
         if (pageData == null || pageData.getContent() == null) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
@@ -165,8 +139,4 @@ public class OrderServiceImpl implements OrderService {
                 pageData.getTotalElements()
         );
     }
-
-
-
-
 }

@@ -113,29 +113,52 @@
         <h2>Danh Sách Khuyến Mãi</h2>
       </div>
 
-      <!-- Search and Filter -->
+       Search and Filter
       <div class="row mb-3">
+<!--        <div class="col-md-6">-->
+<!--          <div class="form-group mr-3">-->
+<!--            <input-->
+<!--                    type="date"-->
+<!--                    class="form-control"-->
+<!--                    id="searchStartDate"-->
+<!--                    placeholder="Chọn ngày bắt đầu"-->
+<!--            />-->
+<!--          </div>-->
+<!--          <div class="form-group mr-3">-->
+<!--            <input-->
+<!--                    type="date"-->
+<!--                    class="form-control"-->
+<!--                    id="searchEndDate"-->
+<!--                    placeholder="Chọn ngày kết thúc"-->
+<!--            />-->
+<!--          </div>-->
+<!--          <button class="btn btn-info ml-3" onclick="handleSearch()">Tìm kiếm</button>-->
+<!--          <button class="btn btn-info ml-3" onclick="location.reload()">Refresh</button>-->
+<!--        </div>-->
         <div class="col-md-6">
           <div class="form-group mr-3">
-            <input
-                    type="date"
-                    class="form-control"
-                    id="searchStartDate"
-                    placeholder="Chọn ngày bắt đầu"
-            />
+            <input type="date" class="form-control" id="searchStartDate" placeholder="Chọn ngày bắt đầu" />
           </div>
           <div class="form-group mr-3">
-            <input
-                    type="date"
-                    class="form-control"
-                    id="searchEndDate"
-                    placeholder="Chọn ngày kết thúc"
-            />
+            <input type="date" class="form-control" id="searchEndDate" placeholder="Chọn ngày kết thúc" />
           </div>
+          <div class="form-group mr-3">
+            <select class="form-control" id="searchStatus">
+              <option value="">Tất cả trạng thái</option>
+              <option value="Upcoming">Upcoming</option>
+              <option value="Active">Active</option>
+              <option value="Ended">Ended</option>
+            </select>
+          </div>
+
           <button class="btn btn-info ml-3" onclick="handleSearch()">Tìm kiếm</button>
-          <button class="btn btn-info ml-3" onclick="location.reload()">Refresh</button>
+          <button class="btn btn-secondary ml-2" onclick="location.reload()">Làm mới</button>
         </div>
+
       </div>
+
+      <!-- Hiển thị danh sách voucher -->
+      <div id="voucherList"></div>
 
       <!-- Table -->
       <table  class="table table-bordered">
