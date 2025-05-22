@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+import com.shoestore.client.dto.response.OrderResponseDTO;
 import java.util.*;
 
 @Service
@@ -28,11 +28,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, Object> getRevenueStatistics(String startDate, String endDate) {
         String url = "http://localhost:8765/Order/revenue?startDate=" + startDate + "&endDate=" + endDate;
+//        String url = "http://api-gateway:8765/Order/revenue?startDate=" + startDate + "&endDate=" + endDate;
+
         return restTemplate.getForObject(url, Map.class);
     }
 
     public List<OrderDTO> getOrdersFromServer() {
         String url = "http://localhost:8765/Order/dsachOrders";
+//        String url = "http://api-gateway:8765/Order/dsachOrders";
         ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(
                 url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
         );
@@ -49,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<BestSellerDTO> getTopSellingProducts(String type) {
         String url = String.format("http://localhost:8765/Order/bestsellers?type=%s&limit=5", type);
+//        String url = String.format("http://api-gateway:8765/Order/bestsellers?type=%s&limit=5", type);
         try {
             ResponseEntity<List<BestSellerDTO>> response = restTemplate.exchange(
                     url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
@@ -63,12 +67,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, Object> getYearlyRevenue() {
         String url = "http://localhost:8765/Order/yearly-revenue";
+//        String url = "http://api-gateway:8765/Order/yearly-revenue";
         return restTemplate.getForObject(url, Map.class);
     }
 
     @Override
     public List<Map<String, Object>> getTop10LoyalCustomers() {
         String url = "http://localhost:8765/Order/loyal-customers?minOrders=";
+//        String url = "http://api-gateway:8765/Order/loyal-customers?minOrders=";
         ResponseEntity<List> response = restTemplate.exchange(
                 url, HttpMethod.GET, null, List.class
         );
@@ -78,18 +84,22 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, Long> getOrderStatistics() {
         String url = "http://localhost:8765/Order/OrderStatistics";
+//        String url = "http://api-gateway:8765/Order/OrderStatistics";
+
         return restTemplate.getForObject(url, Map.class);
     }
 
     @Override
     public OrderCheckoutDTO addOrder(OrderCheckoutDTO orderCheckoutDTO) {
         String url = "http://localhost:8765/Order/add";
+//        String url = "http://api-gateway:8765/Order/add";
         return restTemplate.postForObject(url, orderCheckoutDTO, OrderCheckoutDTO.class);
     }
 
     @Override
     public OrderCheckoutDTO getById(int id) {
         String url = "http://localhost:8765/Order/" + id;
+//        String url = "http://api-gateway:8765/Order/" + id;
         ResponseEntity<OrderCheckoutDTO> response = restTemplate.exchange(
                 url, HttpMethod.GET, null, OrderCheckoutDTO.class
         );
@@ -97,20 +107,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getOrdersByUserId(int userId) {
-        String apiUrl = "http://localhost:8765/Order/user/" + userId; // API để lấy danh sách đơn hàng theo userId
-
+    public List<OrderResponseDTO> getOrdersByUserId(int userId) {
+        String apiUrl = "http://localhost:8765/Order/user/" + userId;
+//        String apiUrl = "http://api-gateway:8765/Order/user/" + userId;
         try {
-            ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(
+            ResponseEntity<List<OrderResponseDTO>> response = restTemplate.exchange(
                     apiUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<List<OrderDTO>>() {}
+                    new ParameterizedTypeReference<List<OrderResponseDTO>>() {}
             );
 
-            // Kiểm tra phản hồi
             if (response.getStatusCode() == HttpStatus.OK) {
-                return response.getBody(); // Trả về danh sách đơn hàng
+                return response.getBody();
             } else {
                 throw new RuntimeException("Failed to fetch orders: " + response.getStatusCode());
             }
@@ -118,12 +127,15 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Error fetching orders: " + e.getMessage(), e);
         }
     }
+
     @Override
     public Page<OrderDTO> findByStatus(String status, Pageable pageable) {
         String url = "http://localhost:8765/Order/searchStatus?status=" + status +
                 "&page=" + pageable.getPageNumber() +
                 "&size=" + pageable.getPageSize();
-
+//        String url = "http://api-gateway:8765/Order/searchStatus?status=" + status +
+//                "&page=" + pageable.getPageNumber() +
+//                "&size=" + pageable.getPageSize();
         ResponseEntity<PageDTO<OrderDTO>> response = restTemplate.exchange(
                 url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
         );

@@ -17,8 +17,9 @@
     <div class="product-details">
         <!-- Product Image and Thumbnails -->
         <div class="product-image">
-            <img th:src="@{'http://localhost:8765/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}}"
-                 alt="Ảnh sản phẩm" width="400" height="600"/>
+            <img th:src="@{'http://localhost:8765/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}}" alt="Ảnh sản phẩm" width="400" height="600"/>
+<!--            <img th:src="@{'http://api-gateway:8765/ImageProduct/' + ${product.productID} + '/' + ${product.imageURL.get(0)}}" alt="Ảnh sản phẩm" width="400" height="600"/>-->
+
         </div>
         <form id="productDetailForm" method="POST" action="/customer/cart/add">
             <!-- Product Information -->
@@ -36,14 +37,15 @@
                 <p th:text="${product.description}">
 
                     <!-- Price and Discount -->
-                <p class="product-price" id="product-price" th:text="${product.price}"></p>
+<!--                <p class="product-price" id="product-price" th:text="${product.price}"></p>-->
+                <p class="product-price" id="product-price"  th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'" ></p>
 
                 <!-- Size Chart -->
                 <h5>Size Chart</h5>
                 <div class="size-options">
                     <div th:each="detail : ${productDetail}">
                         <button type="button" class="size-box"
-                                th:text="${detail.size.sizeValue}"
+                                th:text="${detail.size}"
                                 th:value="${detail.productDetailID}">
 
                         </button>
@@ -85,7 +87,7 @@
             <!-- Product Card 1 -->
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product1.jpg" alt="Product 1"
+                    <img src="http://localhost:8765/ImageProduct/1/product1.png" alt="Product 1"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-30%</span>
                 </div>
@@ -102,7 +104,7 @@
             <!-- Product Card 2 -->
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product1.jpg" alt="Product 2"
+                    <img src="http://localhost:8765/ImageProduct/2/product2.png" alt="Product 2"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-20%</span>
                 </div>
@@ -118,7 +120,7 @@
             <!-- Add more product cards as needed -->
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product2.jpg" alt="Product 2"
+                    <img src="http://localhost:8765/ImageProduct/3/product3.png" alt="Product 2"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-20%</span>
                 </div>
@@ -133,7 +135,7 @@
             </div>
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product2.jpg" alt="Product 2"
+                    <img src="http://localhost:8765/ImageProduct/4/product4.png" alt="Product 2"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-20%</span>
                 </div>
@@ -148,7 +150,7 @@
             </div>
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product2.jpg" alt="Product 2"
+                    <img src="http://localhost:8765/ImageProduct/5/product5.png" alt="Product 2"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-20%</span>
                 </div>
@@ -163,7 +165,7 @@
             </div>
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product2.jpg" alt="Product 2"
+                    <img src="http://localhost:8765/ImageProduct/6/product6.png" alt="Product 2"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-20%</span>
                 </div>
@@ -178,7 +180,7 @@
             </div>
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product1.jpg" alt="Product 2"
+                    <img src="http://localhost:8765/ImageProduct/7/product7.png" alt="Product 2"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-20%</span>
                 </div>
@@ -193,7 +195,7 @@
             </div>
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product1.jpg" alt="Product 2"
+                    <img src="http://localhost:8765/ImageProduct/8/product8.png" alt="Product 2"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-20%</span>
                 </div>
@@ -208,7 +210,7 @@
             </div>
             <div class="product-card">
                 <div class="product-card__image-wrapper">
-                    <img src="../../../../../resources/static/images/product1.jpg" alt="Product 2"
+                    <img src="http://localhost:8765/ImageProduct/9/product9.png" alt="Product 2"
                          class="product-card__image">
                     <span class="product-card__discount-badge">-20%</span>
                 </div>
@@ -297,7 +299,7 @@
             console.log(price)
             console.log(quantity)
 
-            const url = "/checkoutFromProductDetail"; // Thay URL theo controller của bạn
+            const url = "/customer-checkout/checkoutFromProductDetail"; // Thay URL theo controller của bạn
             const queryParams = new URLSearchParams();
             queryParams.append("productDetailId", parseInt(productDetailId));
             queryParams.append("quantity", parseInt(quantity));

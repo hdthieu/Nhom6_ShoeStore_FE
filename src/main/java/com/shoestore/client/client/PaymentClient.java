@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @FeignClient(name = "payment-service", url = "http://localhost:8765")
+//@FeignClient(name = "payment-service", url = "http://api-gateway:8765")
+
 public interface PaymentClient {
 
     @PostMapping("/payment/add")

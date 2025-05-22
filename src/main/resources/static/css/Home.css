@@ -646,3 +646,130 @@ html {
 .tab-product-list__button:focus {
   outline: none;
 }
+
+
+
+
+
+/*chat bot*/
+:root {
+  --main-color: #0d6efd;
+  --user-bg: #e7f1ff;
+  --bot-bg: #f8f9fa;
+  --radius: 12px;
+  --font: 'Segoe UI', sans-serif;
+}
+
+.chatbot-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--main-color);
+  color: white;
+  border-radius: 50%;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  transition: all 0.3s;
+}
+.chatbot-toggle:hover {
+  background-color: #0b5ed7;
+}
+
+.chatbot-widget {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  width: 340px;
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+}
+
+.chatbot-header {
+  background-color: var(--main-color);
+  color: white;
+  padding: 12px 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font);
+}
+
+.chatbot-body {
+  flex: 1;
+  padding: 12px;
+  max-height: 350px;
+  overflow-y: auto;
+  background-color: #fefefe;
+  font-family: var(--font);
+  font-size: 14px;
+}
+
+.chatbot-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.chatbot-input input {
+  flex: 1;
+  border: none;
+  padding: 12px;
+  font-size: 14px;
+  outline: none;
+  background: none;
+  font-family: var(--font);
+}
+
+.chatbot-input button {
+  background-color: var(--main-color);
+  border: none;
+  color: white;
+  padding: 0 16px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.chatbot-input button:hover {
+  background-color: #0b5ed7;
+}
+
+.chat-message {
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  max-width: 85%;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.user-msg {
+  background-color: var(--user-bg);
+  color: #084298;
+  align-self: flex-end;
+  margin-left: auto;
+  text-align: right;
+}
+
+.bot-msg {
+  background-color: var(--bot-bg);
+  color: #212529;
+  align-self: flex-start;
+  margin-right: auto;
+}
+
+.close-btn {
+  cursor: pointer;
+  font-size: 18px;
+}

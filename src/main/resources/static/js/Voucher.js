@@ -164,6 +164,7 @@ document.getElementById("voucher-form").addEventListener("submit", function (eve
     }
 
     fetch("http://localhost:8765/products/voucher/add", {
+    // fetch("http://api-gateway:8765/products/voucher/add", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

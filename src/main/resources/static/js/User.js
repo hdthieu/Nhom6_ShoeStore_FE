@@ -1,4 +1,6 @@
 const apiBaseUrl = 'http://localhost:8765/auth/users'; // Cơ sở URL API
+// const apiBaseUrl = 'http://api-gateway:8765/auth/users';
+
 const apiUrl = `${apiBaseUrl}/list`; // Endpoint cho danh sách người dùng
 const apiAddUrl = `${apiBaseUrl}/add`; // Endpoint để thêm user
 const apiSearchUrl = `${apiBaseUrl}/search`; // Endpoint cho tìm kiếm
@@ -255,6 +257,7 @@ function confirmEdit(userId) {
     const isConfirmed = confirm("Are you sure you want to edit this user?");
     if (isConfirmed) {
         window.location.href = `http://localhost:8765/auth/users/edit/${userId}`;
+        // window.location.href = `http://api-gateway:8765/auth/users/edit/${userId}`;
     }
 }
 

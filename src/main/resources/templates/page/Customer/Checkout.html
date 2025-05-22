@@ -69,14 +69,25 @@
         <h4 class="checkout-summary__title">Order Summary</h4>
 
         <div th:each="product : ${ProductDetailCheckoutDTO}" class="checkout-summary__item">
-<!--            <img th:src="@{'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}}"-->
-<!--                 alt="Product Image"-->
-<!--                 class="checkout-summary__image">-->
-            <!--            <span th:text="'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}"></span>-->
+            <img th:if="${product.image != null and #lists.size(product.image) > 0}"
+                 th:src="@{'http://localhost:8765/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}}"
+                 alt="Ảnh sản phẩm"
+                 width="200"
+                 height="200"
+                 style="object-fit: cover;" />
+<!--            <img th:if="${product.image != null and #lists.size(product.image) > 0}"-->
+<!--                 th:src="@{'http://api-gateway:8765/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}}"-->
+<!--                 alt="Ảnh sản phẩm"-->
+<!--                 width="200"-->
+<!--                 height="200"-->
+<!--                 style="object-fit: cover;" />-->
+
+
+<!--                        <span th:text="'http://localhost:8080/ImageProduct/' + ${product.productId} + '/' + ${product.image.get(0)}"></span>-->
             <div class="checkout-summary__details">
                 <p th:text="${product.name}" class="checkout-summary__product-name"></p>
-                <p th:text="${product.productDetailDTO.color+' / '+product.productDetailDTO.size.sizeValue}"
-                   class="checkout-summary__product-variant"></p>
+<!--                <p th:text="${product.productDetailDTO.color+' / '+product.productDetailDTO.size.sizeValue}"-->
+<!--                   class="checkout-summary__product-variant"></p>-->
                 <p class="checkout-summary__product-variant"
                    th:text="${product.price != null ? product.price : product.productDetailDTO.price} + ' x ' + ${product.quantity}">
                 </p>
@@ -86,15 +97,26 @@
             <input type="hidden" th:value="${product.quantity}" class="product-quantity">
             <input type="hidden" th:value="${product.productDetailDTO.productDetailID}" class="product-detail-dto">
 
+
             <input type="hidden" id="userID" th:value="${user.userID}" />
 
         </div>
 
-
+        <!-- VOUCHER INPUT -->
+        <div class="checkout-summary__voucher mb-3">
+            <label for="voucherInput">Enter Voucher Code:</label>
+            <div class="input-group">
+                <input type="text" id="voucherInput" class="form-control" placeholder="e.g. GIAM10">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" id="applyVoucherBtn">Apply</button>
+                </div>
+            </div>
+            <small id="voucherMessage" style="color: green;"></small>
+        </div>
         <div class="checkout-summary__totals">
             <p class="checkout-summary__subtotal">Subtotal <span th:text="${subTotal}"></span></p>
             <p class="checkout-summary__shipping">Shipping <span th:text="${delivery}" id="delivery"></span></p>
-            <p class="checkout-summary__taxes">Estimated taxes <span>222.50VNĐ</span></p>
+<!--            <p class="checkout-summary__taxes">Estimated taxes <span>222.50VNĐ</span></p>-->
             <h4 class="checkout-summary__total">Total <span th:text="${total}+' VND'" id="total"></span></h4>
         </div>
     </div>
@@ -274,6 +296,94 @@
 
 <!--</script>-->
 <script>
+
+
+    let appliedVoucher = null;
+    let voucherDiscount = 0;
+    const fixedDelivery = 50000;
+    const code = document.getElementById("voucherInput").value.trim();
+    document.getElementById("delivery").innerText = "50,000 VNĐ";
+    document.getElementById("applyVoucherBtn").addEventListener("click", () => {
+        const code = document.getElementById("voucherInput").value.trim();
+        const messageElem = document.getElementById("voucherMessage");
+        const totalElem = document.getElementById("total");
+        const subTotal = parseInt(document.querySelector(".checkout-summary__subtotal span").innerText.replace(/\D/g, ""));
+
+        // Reset trạng thái hiển thị cũ
+        messageElem.innerText = "";
+        messageElem.style.color = "orange";
+
+        if (!code) {
+            messageElem.innerText = "⚠️ Vui lòng nhập mã giảm giá!";
+            return;
+        }
+
+        messageElem.innerText = "⏳ Đang kiểm tra mã...";
+
+        fetch(`/customer-checkout/voucher/check?code=${code}`)
+            .then(async res => {
+                const contentType = res.headers.get("content-type") || "";
+                let data = {};
+                try {
+                    data = contentType.includes("application/json") ? await res.json() : {};
+                } catch (err) {
+                    console.warn("⚠️ Không parse được JSON:", err);
+                }
+
+                console.log("🔍 Response status:", res.status);
+                console.log("📦 Response data:", data);
+
+                if (!res.ok) {
+                    messageElem.style.color = "red";
+                    if (res.status === 429) {
+                        messageElem.innerText = "🚫 Bạn thao tác quá nhanh. Vui lòng thử lại sau 1 phút.";
+                    } else if (res.status === 503) {
+                        messageElem.innerText = "⚠️ Không thể kết nối tới hệ thống. Vui lòng thử lại sau.";
+                    } else {
+                        messageElem.innerText = data.message || "⚠️ Có lỗi xảy ra khi kiểm tra mã.";
+                    }
+                    return;
+                }
+
+                if (!data.valid) {
+                    messageElem.style.color = "red";
+                    messageElem.innerText = data.message || "❌ Mã không hợp lệ.";
+                    return;
+                }
+
+                if (subTotal < data.minValueOrder) {
+                    messageElem.style.color = "red";
+                    messageElem.innerText = `⚠️ Đơn hàng phải từ ${data.minValueOrder.toLocaleString()} VND mới áp dụng được mã này.`;
+                    return;
+                }
+
+                const discount = data.type === "PERCENT"
+                    ? Math.floor(subTotal * data.discount / 100)
+                    : data.discount;
+
+                const total = subTotal + 50000 - discount;
+
+                messageElem.style.color = "green";
+                messageElem.innerText = `🎉 Mã hợp lệ: Giảm ${discount.toLocaleString()} VND`;
+                totalElem.innerText = total.toLocaleString() + " VND";
+            })
+            .catch(err => {
+                console.error("❌ Lỗi gọi API:", err);
+                messageElem.style.color = "red";
+                messageElem.innerText = "❌ Không thể kiểm tra mã. Kiểm tra kết nối hoặc thử lại sau.";
+            });
+
+    });
+
+
+
+
+
+
+
+
+
+    // ✅ Gửi đơn hàng (bao gồm cả mã giảm giá)
     document.getElementById("orderButton").addEventListener("click", function () {
         const address = document.getElementById("address").value;
         let total = parseInt(document.getElementById("total").innerText.replace(/\D/g, ""));
@@ -293,21 +403,31 @@
             });
         });
 
+        const voucherCode = document.getElementById("voucherInput").value.trim();
+
         const data = {
             address: parseInt(address),
-            total, delivery,
+            total,
+            delivery: 50000,
             productDetails,
             paymentCase,
+            voucherCode: voucherCode || null,
+            voucherDiscount: voucherDiscount || 0,
             user: { userID }
         };
-
-        fetch("/payment/add", {
+        if (appliedVoucher) {
+            data.voucherID = appliedVoucher.voucherID; // ✅ Gửi voucherID kèm đơn hàng
+        }
+        // Show loading spinner
+        document.getElementById("loadingOverlay").style.display = "flex";
+        fetch("/customer-checkout/payment/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
             .then(response => response.json())
             .then(result => {
+                document.getElementById("loadingOverlay").style.display = "none"; // Hide spinner
                 if (result.redirect) {
                     window.location.href = result.paymentUrl;
                 } else {
@@ -321,8 +441,23 @@
                 alert("Có lỗi xảy ra khi thanh toán!");
             });
     });
-
 </script>
+<div id="loadingOverlay" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+">
+    <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Tải jQuery (nếu chưa có) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>

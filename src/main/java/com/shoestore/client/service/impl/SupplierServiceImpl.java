@@ -28,6 +28,8 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public List<SupplierDTO> getAllSupplier() {
         String apiUrl="http://localhost:8765/products/add";
+//        String apiUrl="http://api-gateway:8765/products/add";
+
         ResponseEntity<SupplierResponseDTO> response= restTemplate.exchange(
                 apiUrl, HttpMethod.GET,null, SupplierResponseDTO.class
         );

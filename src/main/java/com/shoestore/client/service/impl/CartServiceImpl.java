@@ -16,7 +16,9 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartDTO getCartByUserId(int userId) {
+//        String BASE_GATEWAY_URL = "http://api-gateway:8765";
         String BASE_GATEWAY_URL = "http://localhost:8765";
+
         String url = BASE_GATEWAY_URL + "/cart/userid/" + userId;
 
         ResponseEntity<CartDTO> response = restTemplate.exchange(
@@ -27,5 +29,10 @@ public class CartServiceImpl implements CartService {
         );
 
         return response.getBody();
+    }
+
+    @Override
+    public CartDTO createCartForUser(int userId) {
+        return null;
     }
 }

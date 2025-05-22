@@ -15,7 +15,8 @@ public class OrderCheckoutDTO {
     private String status;
     private double total;
     private double feeShip;
-    private VoucherDTO voucher;
+//    private VoucherDTO voucher;
+private Integer voucherID;
     private String shippingAddress;
     private UserDTO user;
 

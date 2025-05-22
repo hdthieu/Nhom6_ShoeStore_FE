@@ -25,6 +25,7 @@ public class OrderDetailController{
     @GetMapping("/view/{orderID}")
     public String viewOrderDetail(@PathVariable int orderID, Model model) {
         Map<String, Object> orderDetail = orderDetailService.fetchOrderDetailByOrderID(orderID);
+        System.out.println(orderDetail);
         model.addAttribute("orderDetail", orderDetail);
 
         return "page/Admin/ChiTietDonHang";     }

@@ -187,6 +187,11 @@
                                      alt="Hình ảnh sản phẩm"
                                      class="image-preview"
                                      style="max-width: 300px; max-height: 300px; margin-right: 10px;" />
+<!--                                <img id="editImagePreview"-->
+<!--                                     th:src="@{http://api-gateway:8765/images/{image}(image=${product.imageURL[0]})}"-->
+<!--                                     alt="Hình ảnh sản phẩm"-->
+<!--                                     class="image-preview"-->
+<!--                                     style="max-width: 300px; max-height: 300px; margin-right: 10px;" />-->
                             </div>
                         </div>
                     </div>
@@ -251,6 +256,8 @@
 
         // Gửi yêu cầu PUT với FormData
         fetch('http://localhost:8765/products/update/' + productID, {
+        // fetch('http://api-gateway:8765/products/update/' + productID, {
+
             method: 'PUT',
             body: formData  // Gửi FormData thay vì JSON
         })

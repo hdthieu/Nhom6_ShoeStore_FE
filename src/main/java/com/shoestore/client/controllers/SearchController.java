@@ -102,7 +102,7 @@ public class SearchController {
         model.addAttribute("products", products);
         List<CategoryProductCountDTO> categories = categoryService.getCountProduct();
         model.addAttribute("categories", categories);
-        List<BrandDTO> brands = brandService.getAllBrands();
+        List<BrandDTO> brands = brandService.getAllBrand();
         model.addAttribute("brands", brands);
 
         // Thêm các size và color options vào model

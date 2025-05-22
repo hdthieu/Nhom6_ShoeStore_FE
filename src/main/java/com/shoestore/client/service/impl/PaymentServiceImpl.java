@@ -14,6 +14,7 @@ public class PaymentServiceImpl implements PaymentService {
     private RestTemplate restTemplate;
 
     private final String PAYMENT_API_URL = "http://localhost:8765/payment/add"; // Có thể đưa vào application.properties
+//    private final String PAYMENT_API_URL = "http://api-gateway:8765/payment/add"; // Có thể đưa vào application.properties
 
     @Override
     public PaymentDTO addPayment(PaymentDTO paymentDTO) {

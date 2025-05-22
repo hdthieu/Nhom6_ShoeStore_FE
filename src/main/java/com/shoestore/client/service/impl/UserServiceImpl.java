@@ -17,6 +17,7 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
+//    private static final String SERVER_BASE_URL = "http://api-gateway:8765/";
     private static final String SERVER_BASE_URL = "http://localhost:8765/";
 
     @Autowired
@@ -72,7 +73,8 @@ public class UserServiceImpl implements UserService {
     // này của phương
     @Override
     public UserDTO getUserById(int id) {
-        String apiUrl = "http://localhost:8765/auth/users/" + id; // URL API để lấy thông tin người dùng theo ID
+        String apiUrl = "http://localhost:8765/auth/users/" + id;
+//        String apiUrl = "http://api-gateway:8765/auth/users/" + id;
 
         try {
             // Gửi yêu cầu GET tới API và nhận lại đối tượng UserDTO
@@ -117,6 +119,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getUsersFromServer() {
         String apiUrl = "http://localhost:8765/auth/users/list";
+//        String apiUrl = "http://api-gateway:8765/auth/users/list";
 
         ResponseEntity<List<UserDTO>> response = restTemplate.exchange(
                 apiUrl, HttpMethod.GET, null,
@@ -129,7 +132,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO saveUser(UserDTO userDTO) {
-        String apiUrl = "http://localhost:8765/auth/users/add"; // URL API để thêm user
+        String apiUrl = "http://localhost:8765/auth/users/add";
+//        String apiUrl = "http://api-gateway:8765/auth/users/add";
+
 
         try {
             // Gửi yêu cầu POST tới API

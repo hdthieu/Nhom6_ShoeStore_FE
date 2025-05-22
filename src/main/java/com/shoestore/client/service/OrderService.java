@@ -4,6 +4,7 @@ import com.shoestore.client.dto.request.OrderCheckoutDTO;
 import com.shoestore.client.dto.request.OrderDTO;
 import com.shoestore.client.dto.request.ProductDTO;
 import com.shoestore.client.dto.response.BestSellerDTO;
+import com.shoestore.client.dto.response.OrderResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public interface OrderService {
 
     OrderCheckoutDTO getById(int id);
 
-    List<OrderDTO> getOrdersByUserId(int userId);
+    List<OrderResponseDTO> getOrdersByUserId(int userId);
 
     public Page<OrderDTO> findByStatus(String status, Pageable pageable);
 }

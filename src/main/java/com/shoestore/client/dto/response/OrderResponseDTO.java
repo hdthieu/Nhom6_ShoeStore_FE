@@ -18,5 +18,6 @@ public class OrderResponseDTO {
     private int paymentID;
     private String shippingAddress;
     private int userID;
-    private List<OrderDetailResponseDTO> orderDetails;
+    private double totalPrice;
+    private List<OrderDetailResponeDTO> orderDetails;
 }

@@ -9,23 +9,25 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/customer")
 public class HomeController {
   @Autowired
   private ProductService productService;
   @Autowired
   private BrandService brandService;
 
-  @GetMapping("/customer/home")
+  @GetMapping("/home")
   public String home(Model model) {
     // Fetch Top 10 Best Sellers, New Arrivals, and Trending Products
     List<ProductHomeDTO> top10BestSellers = productService.getTop10BestSellers();
     List<ProductHomeDTO> top10NewArrivals = productService.getTop10NewArrivals();
     List<ProductHomeDTO> top10Trending = productService.getTop10Trending();
-    List<BrandDTO> brands = brandService.getAllBrand();
+    List<BrandDTO> brands = brandService.getAllBrands();
 //    System.out.println(top10BestSellers);
 //    System.out.println(top10NewArrivals);
 //    System.out.println(top10Trending);

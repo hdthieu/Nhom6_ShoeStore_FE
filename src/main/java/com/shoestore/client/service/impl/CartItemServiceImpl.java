@@ -18,8 +18,9 @@ import java.util.List;
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
-
   private static final String SERVER_BASE_URL = "http://localhost:8765/cart/";
+
+//  private static final String SERVER_BASE_URL = "http://api-gateway:8765/cart/";
 
   @Autowired
   private RestTemplate restTemplate;
@@ -52,7 +53,10 @@ public class CartItemServiceImpl implements CartItemService {
 
   @Override
   public CartItemDTO addCartItem(CartItemDTO cartItemDTO) {
+
     String apiUrl = "http://localhost:8765/cart/add";
+
+//    String apiUrl = "http://api-gateway:8765/cart/add";
     ResponseEntity<CartItemDTO> response=restTemplate.postForEntity(
             apiUrl,cartItemDTO, CartItemDTO.class
     );
