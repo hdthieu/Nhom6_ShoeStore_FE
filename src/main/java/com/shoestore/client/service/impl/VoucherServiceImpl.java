@@ -146,7 +146,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         if (t instanceof RateLimitException || t instanceof RequestNotPermitted) {
-            throw new RateLimitException("🚫 Bạn thao tác quá nhanh. Vui lòng thử lại sau.");
+            throw new RateLimitException("🚫 Bạn thao tác quá nhanh. Vui lòng thử lại sau 1 phút.");
         }
 
         throw new RetryFailureException("⚠️ Không thể kết nối tới hệ thống. Vui lòng thử lại sau.");

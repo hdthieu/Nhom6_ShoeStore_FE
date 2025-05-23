@@ -88,11 +88,19 @@
                 <p th:text="${product.name}" class="checkout-summary__product-name"></p>
 <!--                <p th:text="${product.productDetailDTO.color+' / '+product.productDetailDTO.size.sizeValue}"-->
 <!--                   class="checkout-summary__product-variant"></p>-->
+<!--                <p class="checkout-summary__product-variant"-->
+<!--                   th:text="${product.price != null ? product.price : product.productDetailDTO.price}  + ' x ' + ${product.quantity}">-->
+<!--                </p>-->
                 <p class="checkout-summary__product-variant"
-                   th:text="${product.price != null ? product.price : product.productDetailDTO.price} + ' x ' + ${product.quantity}">
+                   th:text="${#numbers.formatDecimal((product.price != null ? product.price : product.productDetailDTO.price), 0, 'COMMA', 0, 'POINT')} + ' x ' + ${product.quantity}">
                 </p>
+
             </div>
-            <p class="checkout-summary__price" th:text="${product.price* product.quantity}"></p>
+<!--            <p class="checkout-summary__price" th:text="${product.price* product.quantity}"></p>-->
+            <p class="checkout-summary__price"
+               th:text="${#numbers.formatDecimal(product.price * product.quantity, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+            </p>
+
             <input type="hidden" th:value="${product.price}" class="product-price">
             <input type="hidden" th:value="${product.quantity}" class="product-quantity">
             <input type="hidden" th:value="${product.productDetailDTO.productDetailID}" class="product-detail-dto">
@@ -298,18 +306,96 @@
 <script>
 
 
+    // let appliedVoucher = null;
+    // let voucherDiscount = 0;
+    // const fixedDelivery = 50000;
+    // const code = document.getElementById("voucherInput").value.trim();
+    // document.getElementById("delivery").innerText = "50,000 VNĐ";
+    // document.getElementById("applyVoucherBtn").addEventListener("click", () => {
+    //     const code = document.getElementById("voucherInput").value.trim();
+    //     const messageElem = document.getElementById("voucherMessage");
+    //     const totalElem = document.getElementById("total");
+    //     const subTotal = parseInt(document.querySelector(".checkout-summary__subtotal span").innerText.replace(/\D/g, ""));
+    //
+    //     // Reset trạng thái hiển thị cũ
+    //     messageElem.innerText = "";
+    //     messageElem.style.color = "orange";
+    //
+    //     if (!code) {
+    //         messageElem.innerText = "⚠️ Vui lòng nhập mã giảm giá!";
+    //         return;
+    //     }
+    //
+    //     messageElem.innerText = "⏳ Đang kiểm tra mã...";
+    //
+    //     fetch(`/customer-checkout/voucher/check?code=${code}`)
+    //         .then(async res => {
+    //             const contentType = res.headers.get("content-type") || "";
+    //             let data = {};
+    //             try {
+    //                 data = contentType.includes("application/json") ? await res.json() : {};
+    //             } catch (err) {
+    //                 console.warn("⚠️ Không parse được JSON:", err);
+    //             }
+    //
+    //             console.log("🔍 Response status:", res.status);
+    //             console.log("📦 Response data:", data);
+    //
+    //             if (!res.ok) {
+    //                 messageElem.style.color = "red";
+    //                 if (res.status === 429) {
+    //                     messageElem.innerText = "🚫 Bạn thao tác quá nhanh. Vui lòng thử lại sau 1 phút.";
+    //                 } else if (res.status === 503) {
+    //                     messageElem.innerText = "⚠️ Không thể kết nối tới hệ thống. Vui lòng thử lại sau.";
+    //                 } else {
+    //                     messageElem.innerText = data.message || "⚠️ Có lỗi xảy ra khi kiểm tra mã.";
+    //                 }
+    //                 return;
+    //             }
+    //
+    //             if (!data.valid) {
+    //                 messageElem.style.color = "red";
+    //                 messageElem.innerText = data.message || "❌ Mã không hợp lệ.";
+    //                 return;
+    //             }
+    //
+    //             if (subTotal < data.minValueOrder) {
+    //                 messageElem.style.color = "red";
+    //                 messageElem.innerText = `⚠️ Đơn hàng phải từ ${data.minValueOrder.toLocaleString()} VND mới áp dụng được mã này.`;
+    //                 return;
+    //             }
+    //
+    //             const discount = data.type === "PERCENT"
+    //                 ? Math.floor(subTotal * data.discount / 100)
+    //                 : data.discount;
+    //
+    //             const total = subTotal + 50000 - discount;
+    //
+    //             messageElem.style.color = "green";
+    //             messageElem.innerText = `🎉 Mã hợp lệ: Giảm ${discount.toLocaleString()} VND`;
+    //             totalElem.innerText = total.toLocaleString() + " VND";
+    //         })
+    //         .catch(err => {
+    //             console.error("❌ Lỗi gọi API:", err);
+    //             messageElem.style.color = "red";
+    //             messageElem.innerText = "❌ Không thể kiểm tra mã. Kiểm tra kết nối hoặc thử lại sau.";
+    //         });
+    //
+    // });
     let appliedVoucher = null;
     let voucherDiscount = 0;
     const fixedDelivery = 50000;
-    const code = document.getElementById("voucherInput").value.trim();
-    document.getElementById("delivery").innerText = "50,000 VNĐ";
+
+    document.getElementById("delivery").innerText = "50.000 VNĐ";
+
     document.getElementById("applyVoucherBtn").addEventListener("click", () => {
         const code = document.getElementById("voucherInput").value.trim();
         const messageElem = document.getElementById("voucherMessage");
         const totalElem = document.getElementById("total");
-        const subTotal = parseInt(document.querySelector(".checkout-summary__subtotal span").innerText.replace(/\D/g, ""));
 
-        // Reset trạng thái hiển thị cũ
+        const subTotalText = document.querySelector(".checkout-summary__subtotal span").innerText;
+        const subTotal = parseInt(subTotalText.replace(/\./g, '').replace(/\D/g, '')) || 0;
+
         messageElem.innerText = "";
         messageElem.style.color = "orange";
 
@@ -330,50 +416,45 @@
                     console.warn("⚠️ Không parse được JSON:", err);
                 }
 
-                console.log("🔍 Response status:", res.status);
-                console.log("📦 Response data:", data);
-
-                if (!res.ok) {
+                if (!res.ok || !data.valid) {
                     messageElem.style.color = "red";
-                    if (res.status === 429) {
-                        messageElem.innerText = "🚫 Bạn thao tác quá nhanh. Vui lòng thử lại sau 1 phút.";
-                    } else if (res.status === 503) {
-                        messageElem.innerText = "⚠️ Không thể kết nối tới hệ thống. Vui lòng thử lại sau.";
-                    } else {
-                        messageElem.innerText = data.message || "⚠️ Có lỗi xảy ra khi kiểm tra mã.";
-                    }
-                    return;
-                }
-
-                if (!data.valid) {
-                    messageElem.style.color = "red";
-                    messageElem.innerText = data.message || "❌ Mã không hợp lệ.";
+                    messageElem.innerText = data.message || "❌ Mã không hợp lệ hoặc có lỗi xảy ra.";
                     return;
                 }
 
                 if (subTotal < data.minValueOrder) {
                     messageElem.style.color = "red";
-                    messageElem.innerText = `⚠️ Đơn hàng phải từ ${data.minValueOrder.toLocaleString()} VND mới áp dụng được mã này.`;
+                    messageElem.innerText = `⚠️ Đơn hàng phải từ ${data.minValueOrder.toLocaleString('vi-VN')} VND mới áp dụng được mã này.`;
                     return;
                 }
 
-                const discount = data.type === "PERCENT"
-                    ? Math.floor(subTotal * data.discount / 100)
-                    : data.discount;
+                let discountAmount = 0;
+                if (data.type === "PERCENTAGE") {
+                    discountAmount = Math.floor(subTotal * data.discount / 100);
+                } else if (data.type === "FLAT") {
+                    discountAmount = data.discount;
+                }
 
-                const total = subTotal + 50000 - discount;
+                discountAmount = Math.min(discountAmount, subTotal);
+                const total = subTotal + fixedDelivery - discountAmount;
 
                 messageElem.style.color = "green";
-                messageElem.innerText = `🎉 Mã hợp lệ: Giảm ${discount.toLocaleString()} VND`;
-                totalElem.innerText = total.toLocaleString() + " VND";
+                if (data.type === "PERCENTAGE") {
+                    messageElem.innerText = `🎉 Mã hợp lệ: Giảm ${data.discount}% (~${discountAmount.toLocaleString('vi-VN')} VNĐ)`;
+                } else {
+                    messageElem.innerText = `🎉 Mã hợp lệ: Giảm ${discountAmount.toLocaleString('vi-VN')} VNĐ`;
+                }
+
+                totalElem.innerText = `${total.toLocaleString('vi-VN')} VNĐ`;
             })
             .catch(err => {
                 console.error("❌ Lỗi gọi API:", err);
                 messageElem.style.color = "red";
                 messageElem.innerText = "❌ Không thể kiểm tra mã. Kiểm tra kết nối hoặc thử lại sau.";
             });
-
     });
+
+
 
 
 
